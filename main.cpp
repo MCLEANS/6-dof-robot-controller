@@ -19,7 +19,18 @@ custom_libraries::MG996R base_servo(TIM4,
                                     6,
                                     custom_libraries::AF2
                                     );
-
+custom_libraries::MG996R shoulder_servo(TIM4,
+                                        custom_libraries::channel2,
+                                        GPIOB,
+                                        7,
+                                        custom_libraries::AF2
+                                        );
+custom_libraries::MG996R wrist_servo(TIM4,
+                                    custom_libraries::channel3,
+                                    GPIOB,
+                                    8,
+                                    custom_libraries::AF2
+                                    );
 
 custom_libraries::clock_config system_clock;
 
@@ -37,9 +48,16 @@ void motor_control(void* pvParam){
   while(1){
     base_servo.move_to_angle(20);
     vTaskDelay(pdMS_TO_TICKS(1000));
+    shoulder_servo.move_to_angle(60);
+    vTaskDelay(pdMS_TO_TICKS(300));
+    shoulder_servo.move_to_angle(100);
+    vTaskDelay(pdMS_TO_TICKS(300));
     base_servo.move_to_angle(120);
     vTaskDelay(pdMS_TO_TICKS(1000));
-
+    shoulder_servo.move_to_angle(60);
+    vTaskDelay(pdMS_TO_TICKS(300));
+    shoulder_servo.move_to_angle(100); 
+    vTaskDelay(pdMS_TO_TICKS(300));
   }
 }
 
