@@ -3,10 +3,14 @@
 #CXX SOURCE_FILES
 CXX_SOURCES += main.cpp
 CXX_SOURCES += clockconfig.cpp
+CXX_SOURCES += PWM.cpp
+CXX_SOURCES += MG996R.cpp
 
 
 CXX_OBJS += main.o
 CXX_OBJS += clockconfig.o
+CXX_OBJS += PWM.o 
+CXX_OBJS += MG996R.o
 
 
 
