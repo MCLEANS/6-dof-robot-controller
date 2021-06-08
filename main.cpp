@@ -18,13 +18,6 @@
 #define CS_PIN 3
 
 /**
- *  To Do : Read Angle data from accelerometer
- *          Create task to perform data reading.
- *          Create Serial output to flash out data
- */
-
-
-/**
  * Servo motor objects
  */
 custom_libraries::MG996R base_servo(TIM4,
@@ -71,6 +64,18 @@ custom_libraries::USART gateway_serial(USART1,GPIOA,10,9,115200);
  */
 TaskHandle_t motor_control_task;
 TaskHandle_t accelerometer_handler_task;
+TaskHandle_t gateway_serial_handler_task;
+
+/**
+ * Serial port to handle sending data to gateway
+ */
+void gateway_serial_handler(void* pvParam){
+  /* Initialize serial port */
+  gateway_serial.initialize();
+  while(1){
+
+  }
+}
 
 /**
  * Task to read Accelerometer data
@@ -124,6 +129,12 @@ int main(void) {
               NULL,
               1,
               &accelerometer_handler_task);
+  xTaskCreate(gateway_serial_handler,
+              "Task to handle sending data to the gateway",
+              100,
+              NULL,
+              1,
+              &gateway_serial_handler_task);
 
   /* Start system scheduler */
   vTaskStartScheduler();
