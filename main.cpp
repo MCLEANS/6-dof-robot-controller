@@ -8,12 +8,24 @@
 #include <LIS3DH.h>
 
 /**
+ * LIS3DH sensor Pin Mapping
+ */
+#define SCK_PIN 5
+#define MOSI_PIN 7
+#define MISO_PIN 6
+#define CS_PORT GPIOE
+#define CS_PIN 3
+
+/**
  *  To Do : Read Angle data from accelerometer
  *          Create task to perform data reading.
  *          Create Serial output to flash out data
  */
 
 
+/**
+ * Servo motor objects
+ */
 custom_libraries::MG996R base_servo(TIM4,
                                     custom_libraries::channel1,
                                     GPIOB,
@@ -32,13 +44,27 @@ custom_libraries::MG996R wrist_servo(TIM4,
                                     8,
                                     custom_libraries::AF2
                                     );
-
+/**
+ * System clock configuration
+ */
 custom_libraries::clock_config system_clock;
+
+/**
+ * Accelerometer object
+ */
+custom_libraries::LIS3DH motion_sensor(SPI1,
+                                        GPIOA,
+                                        SCK_PIN,
+                                        MOSI_PIN,
+                                        MISO_PIN,
+                                        CS_PORT,
+                                        CS_PIN);
 
 /**
  * Task handles
  */
 TaskHandle_t motor_control_task;
+TaskHandle_t accelerometer_task;
 
 /**
  * Task to control robot motors
