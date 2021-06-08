@@ -64,12 +64,21 @@ custom_libraries::LIS3DH motion_sensor(SPI1,
  * Task handles
  */
 TaskHandle_t motor_control_task;
-TaskHandle_t accelerometer_task;
+TaskHandle_t accelerometer_handler_task;
+
+/**
+ * Task to read Accelerometer data
+ */
+void accelerometer_handler(void* pvParam){
+  while(1){
+
+  }
+}
 
 /**
  * Task to control robot motors
  */
-void motor_control(void* pvParam){
+void motor_controller(void* pvParam){
   /* base motor rest position */
   base_servo.move_to_angle(90);
   while(1){
@@ -92,12 +101,18 @@ int main(void) {
   system_clock.initialize();
 
   /* create system tasks */
-  xTaskCreate(motor_control,
+  xTaskCreate(motor_controller,
               "Motor Control Task",
               100,
               NULL,
               1,
               &motor_control_task);
+  xTaskCreate(accelerometer_handler,
+              "Task to handle reading data from accelerometer",
+              100,
+              NULL,
+              1,
+              &accelerometer_handler_task);
 
   /* Start system scheduler */
   vTaskStartScheduler();
