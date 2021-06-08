@@ -62,6 +62,11 @@ custom_libraries::LIS3DH accel_sensor(SPI1,
                                         CS_PIN);
 
 /**
+ * Serial port to send data to gateway
+ */
+custom_libraries::USART gateway_serial(USART1,GPIOA,10,9,115200);
+
+/**
  * Task handles
  */
 TaskHandle_t motor_control_task;
