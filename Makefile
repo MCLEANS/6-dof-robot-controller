@@ -5,12 +5,16 @@ CXX_SOURCES += main.cpp
 CXX_SOURCES += clockconfig.cpp
 CXX_SOURCES += PWM.cpp
 CXX_SOURCES += MG996R.cpp
+CXX_SOURCES += SPI_16bit.cpp 
+CXX_SOURCES += LIS3DH.cpp 
 
 
 CXX_OBJS += main.o
 CXX_OBJS += clockconfig.o
 CXX_OBJS += PWM.o 
 CXX_OBJS += MG996R.o
+CXX_OBJS += SPI_16bit.o 
+CXX_OBJS += LIS3DH.o 
 
 
 

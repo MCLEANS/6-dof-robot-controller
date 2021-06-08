@@ -5,6 +5,7 @@
 #include <portmacro.h>
 
 #include <MG996R.h>
+#include <LIS3DH.h>
 
 /**
  *  To Do : Read Angle data from accelerometer
