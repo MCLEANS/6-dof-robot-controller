@@ -6,6 +6,7 @@
 
 #include <MG996R.h>
 #include <LIS3DH.h>
+#include <USART.h>
 
 /**
  * LIS3DH sensor Pin Mapping
