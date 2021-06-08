@@ -9,6 +9,11 @@
 #include <USART.h>
 
 /**
+ * To Do
+ * Add Queue to hold accel data and read data from the queue in the gateway serial handler
+ */
+
+/**
  * LIS3DH sensor Pin Mapping
  */
 #define SCK_PIN 5
