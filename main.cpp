@@ -70,8 +70,13 @@ TaskHandle_t accelerometer_handler_task;
  * Task to read Accelerometer data
  */
 void accelerometer_handler(void* pvParam){
+  /* Initialize the motion sensor */
+  motion_sensor.initialize();
+  /* Structure to hold accel angle values */
+  custom_libraries::Angle_values angle_values;
   while(1){
-
+    angle_values = motion_sensor.read_angles();
+    vTaskDelay(pdMS_TO_TICKS(200))
   }
 }
 
