@@ -52,7 +52,7 @@ custom_libraries::clock_config system_clock;
 /**
  * Accelerometer object
  */
-custom_libraries::LIS3DH motion_sensor(SPI1,
+custom_libraries::LIS3DH accel_sensor(SPI1,
                                         GPIOA,
                                         SCK_PIN,
                                         MOSI_PIN,
@@ -71,12 +71,12 @@ TaskHandle_t accelerometer_handler_task;
  */
 void accelerometer_handler(void* pvParam){
   /* Initialize the motion sensor */
-  motion_sensor.initialize();
+  accel_sensor.initialize();
   /* Structure to hold accel angle values */
   custom_libraries::Angle_values angle_values;
   while(1){
-    angle_values = motion_sensor.read_angles();
-    vTaskDelay(pdMS_TO_TICKS(200))
+    angle_values = accel_sensor.read_angles();
+    vTaskDelay(pdMS_TO_TICKS(200));
   }
 }
 
