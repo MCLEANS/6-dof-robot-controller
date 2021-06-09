@@ -4,6 +4,8 @@
 #include <task.h>
 #include <portmacro.h>
 
+#include <queue.h>
+
 #include <MG996R.h>
 #include <LIS3DH.h>
 #include <USART.h>
@@ -70,6 +72,11 @@ custom_libraries::USART gateway_serial(USART1,GPIOA,10,9,115200);
 TaskHandle_t motor_control_task;
 TaskHandle_t accelerometer_handler_task;
 TaskHandle_t gateway_serial_handler_task;
+
+/**
+ * Queue handles
+ */
+
 
 /**
  * Serial port to handle sending data to gateway
