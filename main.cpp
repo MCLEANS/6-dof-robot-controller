@@ -4,11 +4,17 @@
 #include <task.h>
 #include <portmacro.h>
 
+#include <string>
+#include <string.h>
+#include <stdlib.h>
+#include <sstream>
+
 #include <queue.h>
 
 #include <MG996R.h>
 #include <LIS3DH.h>
 #include <USART.h>
+
 
 /**
  * To Do
@@ -23,6 +29,8 @@
 #define MISO_PIN 6
 #define CS_PORT GPIOE
 #define CS_PIN 3
+
+#define ZERO_VALUE 0
 
 /**
  * Servo motor objects
@@ -64,7 +72,7 @@ custom_libraries::LIS3DH accel_sensor(SPI1,
 /**
  * Serial port to send data to gateway
  */
-custom_libraries::USART gateway_serial(USART1,GPIOA,10,9,115200);
+custom_libraries::USART gateway_serial(USART2,GPIOA,3,2,115200);
 
 /**
  * Task handles
@@ -77,33 +85,42 @@ TaskHandle_t gateway_serial_handler_task;
  * Queue handles
  */
 QueueHandle_t accel_queue;
-
 /**
  * Serial port to handle sending data to gateway
  */
 void gateway_serial_handler(void* pvParam){
   /* Initialize serial port */
-  gateway_serial.initialize();
+   /* variable to hold angle values received from accel queue */
+  custom_libraries::Angle_values angle_values;
+  char ch_payload[1024];
+  std::string payload;
   while(1){
-
+    /* check if there is data available in queue and retreive */
+    if(xQueueReceive(accel_queue, &angle_values, (TickType_t)0) == pdPASS){
+      /* Accel values have been received */
+      
+    }
+    vTaskDelay(pdMS_TO_TICKS(200));
   }
 }
-
+char data[20];
 /**
  * Task to read Accelerometer data
  */
 void accelerometer_handler(void* pvParam){
   /* Initialize the motion sensor */
   accel_sensor.initialize();
+  
   /* Structure to hold accel angle values */
   custom_libraries::Angle_values angle_values;
   while(1){
     /* Get accelerometer angle values */
     angle_values = accel_sensor.read_angles();
-    /* Add the received angle values to the queue */
-    xQueueSend(accel_queue,(void*) &angle_values,(TickType_t)0);
+    
+    std::sprintf(data,"%i",angle_values.x_axis);
+    gateway_serial.println(data);
     /* Block the task */
-    vTaskDelay(pdMS_TO_TICKS(200));
+    vTaskDelay(pdMS_TO_TICKS(100));
   }
 }
 
@@ -131,6 +148,7 @@ void motor_controller(void* pvParam){
 
 int main(void) {
   system_clock.initialize();
+  gateway_serial.initialize();
 
   /**
    * Create queue to hold accelerometer angle values
@@ -138,24 +156,24 @@ int main(void) {
   accel_queue = xQueueCreate(20,sizeof(custom_libraries::Angle_values));
 
   /* create system tasks */
-  xTaskCreate(motor_controller,
+  /*xTaskCreate(motor_controller,
               "Motor Control Task",
-              100,
+              1000,
               NULL,
               1,
-              &motor_control_task);
+              &motor_control_task);*/
   xTaskCreate(accelerometer_handler,
               "Task to handle reading data from accelerometer",
-              100,
+            200,
               NULL,
-              1,
+              3,
               &accelerometer_handler_task);
-  xTaskCreate(gateway_serial_handler,
+ /* xTaskCreate(gateway_serial_handler,
               "Task to handle sending data to the gateway",
-              100,
+              1000,
               NULL,
-              1,
-              &gateway_serial_handler_task);
+              4,
+              &gateway_serial_handler_task);*/
 
   /* Start system scheduler */
   vTaskStartScheduler();
