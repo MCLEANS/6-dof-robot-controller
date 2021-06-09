@@ -76,7 +76,7 @@ TaskHandle_t gateway_serial_handler_task;
 /**
  * Queue handles
  */
-
+QueueHandle_t accel_queue;
 
 /**
  * Serial port to handle sending data to gateway
@@ -98,7 +98,11 @@ void accelerometer_handler(void* pvParam){
   /* Structure to hold accel angle values */
   custom_libraries::Angle_values angle_values;
   while(1){
+    /* Get accelerometer angle values */
     angle_values = accel_sensor.read_angles();
+    /* Add the received angle values to the queue */
+    xQueueSend(accel_queue,(void*) &angle_values,(TickType_t)0);
+    /* Block the task */
     vTaskDelay(pdMS_TO_TICKS(200));
   }
 }
@@ -127,6 +131,11 @@ void motor_controller(void* pvParam){
 
 int main(void) {
   system_clock.initialize();
+
+  /**
+   * Create queue to hold accelerometer angle values
+   */
+  accel_queue = xQueueCreate(20,sizeof(custom_libraries::Angle_values));
 
   /* create system tasks */
   xTaskCreate(motor_controller,
