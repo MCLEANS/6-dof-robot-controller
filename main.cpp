@@ -90,35 +90,31 @@ QueueHandle_t accel_queue;
  */
 void gateway_serial_handler(void* pvParam){
   /* Initialize serial port */
-   /* variable to hold angle values received from accel queue */
+  /* variable to hold angle values received from accel queue */
   custom_libraries::Angle_values angle_values;
-  char ch_payload[1024];
-  std::string payload;
   while(1){
     /* check if there is data available in queue and retreive */
     if(xQueueReceive(accel_queue, &angle_values, (TickType_t)0) == pdPASS){
-      /* Accel values have been received */
+      /* Accel values have been received successfully */
       
     }
     vTaskDelay(pdMS_TO_TICKS(200));
   }
 }
-char data[20];
 /**
  * Task to read Accelerometer data
  */
 void accelerometer_handler(void* pvParam){
   /* Initialize the motion sensor */
   accel_sensor.initialize();
-  
   /* Structure to hold accel angle values */
   custom_libraries::Angle_values angle_values;
   while(1){
     /* Get accelerometer angle values */
     angle_values = accel_sensor.read_angles();
-    
-    std::sprintf(data,"%i",angle_values.x_axis);
-    gateway_serial.println(data);
+    if(xQueueSend(accel_queue, (void*)&angle_values,(TickType_t)0 == pdPASS){
+      /* Item added to queue succesfully */
+    }
     /* Block the task */
     vTaskDelay(pdMS_TO_TICKS(100));
   }
@@ -168,12 +164,12 @@ int main(void) {
               NULL,
               3,
               &accelerometer_handler_task);
- /* xTaskCreate(gateway_serial_handler,
+  xTaskCreate(gateway_serial_handler,
               "Task to handle sending data to the gateway",
               1000,
               NULL,
               4,
-              &gateway_serial_handler_task);*/
+              &gateway_serial_handler_task);
 
   /* Start system scheduler */
   vTaskStartScheduler();
