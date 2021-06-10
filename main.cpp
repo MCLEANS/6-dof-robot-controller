@@ -14,6 +14,7 @@
 #include <MG996R.h>
 #include <LIS3DH.h>
 #include <USART.h>
+#include <GPIO.h>
 
 
 /**
@@ -112,7 +113,7 @@ void accelerometer_handler(void* pvParam){
   while(1){
     /* Get accelerometer angle values */
     angle_values = accel_sensor.read_angles();
-    if(xQueueSend(accel_queue, (void*)&angle_values,(TickType_t)0 == pdPASS){
+    if(xQueueSend(accel_queue, (void*)&angle_values,(TickType_t)0 == pdPASS)){
       /* Item added to queue succesfully */
     }
     /* Block the task */
@@ -149,7 +150,7 @@ int main(void) {
   /**
    * Create queue to hold accelerometer angle values
    */
-  accel_queue = xQueueCreate(20,sizeof(custom_libraries::Angle_values));
+  accel_queue = xQueueCreate(10,sizeof(custom_libraries::Angle_values));
 
   /* create system tasks */
   /*xTaskCreate(motor_controller,
