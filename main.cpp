@@ -4,13 +4,8 @@
 #include <task.h>
 #include <portmacro.h>
 
-#include <string>
-#include <string.h>
-#include <stdlib.h>
-#include <sstream>
-#include <math.h>
-
 #include <queue.h>
+#include <string.h>
 
 #include <MG996R.h>
 #include <LIS3DH.h>
@@ -32,7 +27,7 @@
 #define CS_PORT GPIOE
 #define CS_PIN 3
 
-#define ZERO_VALUE 0
+#define ZERO_VALUE "0"
 
 /**
  * Servo motor objects
@@ -117,6 +112,7 @@ void tostring(char str[], int num){
  * Serial port to handle sending data to gateway
  */
 void gateway_serial_handler(void* pvParam){
+  gateway_serial.initialize();
   /* Set up status LEDs */
   green_led.pin_mode(custom_libraries::OUTPUT);
   orange_led.pin_mode(custom_libraries::OUTPUT);
@@ -129,30 +125,124 @@ void gateway_serial_handler(void* pvParam){
   blue_led.output_settings(custom_libraries::PUSH_PULL,custom_libraries::VERY_HIGH);
   /* variable to hold values received from queue */
   custom_libraries::Angle_values angle_values;
-  char data[10];
+  char payload[256];
   while(1){
     /* check if there is data available in queue and retreive */
-    if(xQueueReceive(accel_queue, &angle_values, (TickType_t)0) == pdPASS){
+    if(xQueueReceive(accel_queue, &angle_values, portMAX_DELAY) == pdPASS){
+      /* character arrays to hold values */
+      char x_clockwise[10];
+      char x_anticlockwise[10];
+      char y_clockwise[10];
+      char y_anticlockwise[10];
+      
       /* Accel values have been received successfully */
-      tostring(data,angle_values.x_axis);
-      gateway_serial.println(data);
-      if(angle_values.x_clockwise){
-        green_led.toggle();
-        red_led.digital_write(0);
-      }
-      else if(!angle_values.x_clockwise){
+      if(angle_values.x_clockwise && angle_values.y_clockwise){
+        char payload_0[350] = "{\"x_clockwise\":\"";
+        if(angle_values.x_axis > 0) {tostring(x_clockwise,angle_values.x_axis);}
+        else {strcpy(x_clockwise,ZERO_VALUE);}
+        char payload_1[50] = "\",\"x_anticlockwise\":\"";
+        strcpy(x_anticlockwise,ZERO_VALUE);
+        char payload_2[50] = "\",\"y_clockwise\":\"";
+        if(angle_values.y_axis > 0) {tostring(y_clockwise,angle_values.y_axis);}
+        else {strcpy(y_clockwise,ZERO_VALUE);}
+        char payload_3[50] = "\",\"y_anticlockwise\":\"";
+        strcpy(y_anticlockwise,ZERO_VALUE);
+        char payload_4[50] = "\"}";
+        strcat(payload_0,x_clockwise);
+        strcat(payload_0,payload_1);
+        strcat(payload_0,x_anticlockwise);
+        strcat(payload_0,payload_2);
+        strcat(payload_0,y_clockwise);
+        strcat(payload_0,payload_3);
+        strcat(payload_0,y_anticlockwise);
+        strcat(payload_0,payload_4);
+        gateway_serial.println(payload_0);
         red_led.toggle();
-        green_led.digital_write(0);
-      }
-      if(angle_values.y_clockwise){
-        blue_led.toggle();
-        orange_led.digital_write(0);
-      }
-      else if(!angle_values.y_clockwise){
         orange_led.toggle();
         blue_led.digital_write(0);
+        green_led.digital_write(0);
       }
-      
+
+      else if(!angle_values.x_clockwise && angle_values.y_clockwise){
+        char payload_0[350] = "{\"x_clockwise\":\"";
+        strcpy(x_clockwise,ZERO_VALUE);
+        char payload_1[50] = "\",\"x_anticlockwise\":\"";
+        if(angle_values.x_axis > 0) {tostring(x_anticlockwise,angle_values.x_axis);}
+        else {strcpy(x_anticlockwise,ZERO_VALUE);}
+        char payload_2[50] = "\",\"y_clockwise\":\"";
+        if(angle_values.y_axis > 0) {tostring(y_clockwise,angle_values.y_axis);}
+        else {strcpy(y_clockwise,ZERO_VALUE);}
+        char payload_3[50] = "\",\"y_anticlockwise\":\"";
+        strcpy(y_anticlockwise,ZERO_VALUE);
+        char payload_4[50] = "\"}";
+        strcat(payload_0,x_clockwise);
+        strcat(payload_0,payload_1);
+        strcat(payload_0,x_anticlockwise);
+        strcat(payload_0,payload_2);
+        strcat(payload_0,y_clockwise);
+        strcat(payload_0,payload_3);
+        strcat(payload_0,y_anticlockwise);
+        strcat(payload_0,payload_4);
+        gateway_serial.println(payload_0);
+        orange_led.toggle();
+        green_led.toggle();
+        red_led.digital_write(0);
+        blue_led.digital_write(0);
+      }
+
+      else if(!angle_values.x_clockwise && !angle_values.y_clockwise){
+        char payload_0[350] = "{\"x_clockwise\":\"";
+        strcpy(x_clockwise,ZERO_VALUE);
+        char payload_1[50] = "\",\"x_anticlockwise\":\"";
+        if(angle_values.x_axis > 0) {tostring(x_anticlockwise,angle_values.x_axis);}
+        else {strcpy(x_anticlockwise,ZERO_VALUE);}
+        char payload_2[50] = "\",\"y_clockwise\":\"";
+        strcpy(y_clockwise,ZERO_VALUE);
+        char payload_3[50] = "\",\"y_anticlockwise\":\"";
+        if(angle_values.y_axis > 0) {tostring(y_anticlockwise,angle_values.y_axis);}
+        else {strcpy(y_anticlockwise,ZERO_VALUE);}
+        char payload_4[50] = "\"}";
+        strcat(payload_0,x_clockwise);
+        strcat(payload_0,payload_1);
+        strcat(payload_0,x_anticlockwise);
+        strcat(payload_0,payload_2);
+        strcat(payload_0,y_clockwise);
+        strcat(payload_0,payload_3);
+        strcat(payload_0,y_anticlockwise);
+        strcat(payload_0,payload_4);
+        gateway_serial.println(payload_0);
+        green_led.toggle();
+        blue_led.toggle();
+        orange_led.digital_write(0);
+        red_led.digital_write(0);
+      }
+
+      else if(angle_values.x_clockwise && !angle_values.y_clockwise){
+        char payload_0[350] = "{\"x_clockwise\":\"";
+        if(angle_values.x_axis > 0) {tostring(x_clockwise,angle_values.x_axis);}
+        else {strcpy(x_clockwise,ZERO_VALUE);}
+        char payload_1[50] = "\",\"x_anticlockwise\":\"";
+        strcpy(x_anticlockwise,ZERO_VALUE);
+        char payload_2[50] = "\",\"y_clockwise\":\"";
+        strcpy(y_clockwise,ZERO_VALUE);
+        char payload_3[50] = "\",\"y_anticlockwise\":\"";
+        if(angle_values.y_axis > 0) {tostring(y_anticlockwise,angle_values.y_axis);}
+        else {strcpy(y_anticlockwise,ZERO_VALUE);}
+        char payload_4[50] = "\"}";
+        strcat(payload_0,x_clockwise);
+        strcat(payload_0,payload_1);
+        strcat(payload_0,x_anticlockwise);
+        strcat(payload_0,payload_2);
+        strcat(payload_0,y_clockwise);
+        strcat(payload_0,payload_3);
+        strcat(payload_0,y_anticlockwise);
+        strcat(payload_0,payload_4);
+        gateway_serial.println(payload_0);
+        red_led.toggle();
+        blue_led.toggle();
+        orange_led.digital_write(0);
+        green_led.digital_write(0);
+      }      
     }
     vTaskDelay(pdMS_TO_TICKS(50));
   }
@@ -201,8 +291,6 @@ void motor_controller(void* pvParam){
 
 int main(void) {
   system_clock.initialize();
-  gateway_serial.initialize();
-
   /**
    * Create queue to hold accelerometer angle values
    */
@@ -213,17 +301,17 @@ int main(void) {
               "Motor Control Task",
               100,
               NULL,
-              1,
+              2,
               &motor_control_task);
   xTaskCreate(accelerometer_handler,
               "Task to handle reading data from accelerometer",
               200,
               NULL,
-              3,
+              2,
               &accelerometer_handler_task);
   xTaskCreate(gateway_serial_handler,
               "Task to handle sending data to the gateway",
-              200,
+              1000,
               NULL,
               2,
               &gateway_serial_handler_task);
