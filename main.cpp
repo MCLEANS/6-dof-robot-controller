@@ -110,10 +110,14 @@ void gateway_serial_handler(void* pvParam){
   blue_led.output_settings(custom_libraries::PUSH_PULL,custom_libraries::VERY_HIGH);
   /* variable to hold values received from queue */
   custom_libraries::Angle_values angle_values;
+  std::string payload;
+  char data[24];
   while(1){
     /* check if there is data available in queue and retreive */
     if(xQueueReceive(accel_queue, &angle_values, (TickType_t)0) == pdPASS){
       /* Accel values have been received successfully */
+      //payload = std::to_string(23);
+      memcpy(data,(char*)&angle_values.x_axis,sizeof(angle_values.x_axis));
       if(angle_values.x_clockwise){
         green_led.toggle();
         red_led.digital_write(0);
