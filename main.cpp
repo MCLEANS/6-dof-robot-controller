@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <sstream>
+#include <math.h>
 
 #include <queue.h>
 
@@ -73,7 +74,7 @@ custom_libraries::LIS3DH accel_sensor(SPI1,
 /**
  * Serial port to send data to gateway
  */
-custom_libraries::USART gateway_serial(USART2,GPIOA,3,2,115200);
+custom_libraries::USART gateway_serial(USART2,GPIOA,3,2,9600);
 
 /**
  * Create LED objects
@@ -94,6 +95,24 @@ TaskHandle_t gateway_serial_handler_task;
  * Queue handles
  */
 QueueHandle_t accel_queue;
+
+/* Convert an Integer value to a character array */
+void tostring(char str[], int num){
+  int i, rem, len =0, n;
+  n=num;
+  while(n!=0){
+    len++; //get length for string/digits in int
+    n=n/10;
+  }
+  //convert and store in string
+  for(i=0;i<len;i++) {
+    rem=num%10; //last digit fetched first
+    num=num/10; //continue fetching rest of the digits
+    str[len-(i+1)]=rem + '0'; //start storing string with max-1 index first
+  }
+  str[len]='\0'; //null to end the string[max]
+}
+
 /**
  * Serial port to handle sending data to gateway
  */
@@ -110,14 +129,13 @@ void gateway_serial_handler(void* pvParam){
   blue_led.output_settings(custom_libraries::PUSH_PULL,custom_libraries::VERY_HIGH);
   /* variable to hold values received from queue */
   custom_libraries::Angle_values angle_values;
-  std::string payload;
-  char data[24];
+  char data[10];
   while(1){
     /* check if there is data available in queue and retreive */
     if(xQueueReceive(accel_queue, &angle_values, (TickType_t)0) == pdPASS){
       /* Accel values have been received successfully */
-      //payload = std::to_string(23);
-      memcpy(data,(char*)&angle_values.x_axis,sizeof(angle_values.x_axis));
+      tostring(data,angle_values.x_axis);
+      gateway_serial.println(data);
       if(angle_values.x_clockwise){
         green_led.toggle();
         red_led.digital_write(0);
