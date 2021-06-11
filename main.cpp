@@ -125,7 +125,6 @@ void gateway_serial_handler(void* pvParam){
   blue_led.output_settings(custom_libraries::PUSH_PULL,custom_libraries::VERY_HIGH);
   /* variable to hold values received from queue */
   custom_libraries::Angle_values angle_values;
-  char payload[256];
   while(1){
     /* check if there is data available in queue and retreive */
     if(xQueueReceive(accel_queue, &angle_values, portMAX_DELAY) == pdPASS){
