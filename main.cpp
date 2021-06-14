@@ -80,6 +80,11 @@ custom_libraries::_GPIO red_led(GPIOD,14);
 custom_libraries::_GPIO blue_led(GPIOD,15);
 
 /**
+ * Create vibration sensor object
+ */
+custom_libraries::_ADC vibration_sensor(ADC1,GPIOA,1,custom_libraries::ch1,custom_libraries::FAST);
+
+/**
  * Task handles
  */
 TaskHandle_t motor_control_task;
@@ -290,6 +295,12 @@ void motor_controller(void* pvParam){
 
 int main(void) {
   system_clock.initialize();
+  /**
+   * Set-up vibration sensor ADC interrupts
+   * (When using FreeRTOS interrupt priority should not below 0x05)
+   */
+  NVIC_SetPriority(ADC_IRQn,0x05);
+	NVIC_EnableIRQ(ADC_IRQn);
   /**
    * Create queue to hold accelerometer angle values
    */
