@@ -29,6 +29,9 @@
 
 #define ZERO_VALUE "0"
 
+/* variable to hold ADC value */
+uint16_t adc_value = 0;
+
 /**
  * Servo motor objects
  */
@@ -95,6 +98,19 @@ TaskHandle_t gateway_serial_handler_task;
  * Queue handles
  */
 QueueHandle_t accel_queue;
+
+/**
+ * ADC interrupts handler
+ */
+extern "C" void ADC_IRQHandler(void){
+
+	if(ADC1->SR & ADC_SR_EOC){
+		ADC1->SR &= ~ADC_SR_EOC;
+		adc_value = ADC1->DR;
+		ADC1->CR2 |= ADC_CR2_SWSTART;
+	}
+
+}
 
 /* Convert an Integer value to a character array */
 void tostring(char str[], int num){
@@ -294,7 +310,10 @@ void motor_controller(void* pvParam){
 }
 
 int main(void) {
+  /* Initialize system clock */
   system_clock.initialize();
+  /* Initialize vibration sensor */
+  vibration_sensor.initialize();
   /**
    * Set-up vibration sensor ADC interrupts
    * (When using FreeRTOS interrupt priority should not below 0x05)
