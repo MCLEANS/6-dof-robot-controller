@@ -11,7 +11,7 @@
 #include <LIS3DH.h>
 #include <USART.h>
 #include <GPIO.h>
-
+#include <ADC.h>
 
 /**
  * To Do
