@@ -32,6 +32,12 @@
 /* variable to hold ADC value */
 uint16_t adc_value = 0;
 
+/* Type to hold accel and vibration sensor values */
+struct sensor_values{
+  custom_libraries::Angle_values angle_values;
+  int vibration_value;
+};
+
 /**
  * Servo motor objects
  */
