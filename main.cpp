@@ -122,7 +122,6 @@ void adc_timer_callback(TimerHandle_t xTimer){
  */
 extern "C" void ADC_IRQHandler(void)
 {
-
   if (ADC1->SR & ADC_SR_EOC)
   {
     ADC1->SR &= ~ADC_SR_EOC;
