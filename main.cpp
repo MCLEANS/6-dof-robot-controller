@@ -5,6 +5,7 @@
 #include <portmacro.h>
 
 #include <queue.h>
+#include <timers.h>
 #include <string.h>
 
 #include <MG996R.h>
@@ -101,6 +102,20 @@ TaskHandle_t gateway_serial_handler_task;
  * Queue handles
  */
 QueueHandle_t sensor_queue;
+
+/**
+ * Timer handles
+ */
+TimerHandle_t adc_timer;
+
+/**
+ * Software timer to tick every 1 ms
+ */
+void adc_timer_callback(TimerHandle_t xTimer){
+  /* Increment the vibration sensor delay counter */
+  vibration_sensor.count++;
+}
+
 
 /**
  * ADC interrupts handler
@@ -392,6 +407,14 @@ int main(void)
    * Create queue to hold accelerometer angle values
    */
   sensor_queue = xQueueCreate(10, sizeof(custom_libraries::Angle_values));
+  /**
+   * Create adc timer
+   */
+  adc_timer = xTimerCreate("Timer to be used by ADC",
+                            pdMS_TO_TICKS(1),
+                            pdTRUE,
+                            (void*)0,
+                            adc_timer_callback);
 
   /* create system tasks */
   xTaskCreate(motor_controller,
