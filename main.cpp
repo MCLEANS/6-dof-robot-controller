@@ -91,7 +91,7 @@ custom_libraries::_ADC vibration_sensor(ADC1,GPIOA,1,custom_libraries::ch1,custo
  * Task handles
  */
 TaskHandle_t motor_control_task;
-TaskHandle_t accelerometer_handler_task;
+TaskHandle_t sensor_handler_task;
 TaskHandle_t gateway_serial_handler_task;
 
 /**
@@ -268,9 +268,9 @@ void gateway_serial_handler(void* pvParam){
   }
 }
 /**
- * Task to read Accelerometer data
+ * Task to read Accelerometer and vibration sensor data
  */
-void accelerometer_handler(void* pvParam){
+void sensor_handler(void* pvParam){
   /* Initialize the motion sensor */
   accel_sensor.initialize();
   /* Structure to hold accel angle values */
@@ -332,12 +332,12 @@ int main(void) {
               NULL,
               2,
               &motor_control_task);
-  xTaskCreate(accelerometer_handler,
-              "Task to handle reading data from accelerometer",
+  xTaskCreate(sensor_handler,
+              "Task to handle reading data from accelerometer and vibration sensor",
               200,
               NULL,
               2,
-              &accelerometer_handler_task);
+              &sensor_handler_task);
   xTaskCreate(gateway_serial_handler,
               "Task to handle sending data to the gateway",
               1000,
