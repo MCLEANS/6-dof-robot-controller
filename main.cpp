@@ -34,7 +34,7 @@
 uint16_t adc_value = 0;
 
 /* Type to hold accel and vibration sensor values */
-struct sensor_values{
+struct Sensor_values{
   custom_libraries::Angle_values angle_values;
   int vibration_value;
 };
@@ -167,44 +167,50 @@ void gateway_serial_handler(void *pvParam)
   red_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
   blue_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
   /* variable to hold values received from queue */
-  custom_libraries::Angle_values angle_values;
+  Sensor_values sensor_values;
   while (1)
   {
     /* check if there is data available in queue and retreive */
-    if (xQueueReceive(sensor_queue, &angle_values, portMAX_DELAY) == pdPASS)
+    if (xQueueReceive(sensor_queue, &sensor_values, portMAX_DELAY) == pdPASS)
     {
       /* character arrays to hold values */
       char x_clockwise[10];
       char x_anticlockwise[10];
       char y_clockwise[10];
       char y_anticlockwise[10];
+      char vibration[10];
+      char noise[10];
 
       /* Accel values have been received successfully */
-      if (angle_values.x_clockwise && angle_values.y_clockwise)
+      if (sensor_values.angle_values.x_clockwise && sensor_values.angle_values.y_clockwise)
       {
-        char payload_0[350] = "{\"x_clockwise\":\"";
-        if (angle_values.x_axis > 0)
+        char payload_0[350] = "{\"xClockWise\":\"";
+        if (sensor_values.angle_values.x_axis > 0)
         {
-          tostring(x_clockwise, angle_values.x_axis);
+          tostring(x_clockwise, sensor_values.angle_values.x_axis);
         }
         else
         {
           strcpy(x_clockwise, ZERO_VALUE);
         }
-        char payload_1[50] = "\",\"x_anticlockwise\":\"";
+        char payload_1[50] = "\",\"xAntiClockWise\":\"";
         strcpy(x_anticlockwise, ZERO_VALUE);
         char payload_2[50] = "\",\"y_clockwise\":\"";
-        if (angle_values.y_axis > 0)
+        if (sensor_values.angle_values.y_axis > 0)
         {
-          tostring(y_clockwise, angle_values.y_axis);
+          tostring(y_clockwise, sensor_values.angle_values.y_axis);
         }
         else
         {
           strcpy(y_clockwise, ZERO_VALUE);
         }
-        char payload_3[50] = "\",\"y_anticlockwise\":\"";
+        char payload_3[50] = "\",\"yAntiClockWise\":\"";
         strcpy(y_anticlockwise, ZERO_VALUE);
-        char payload_4[50] = "\"}";
+        char payload_4[50] = "\",\"vibration\":\"";
+        tostring(vibration,sensor_values.vibration_value);
+        char payload_5[50] = "\",\"noise\":\"";
+        strcpy(noise,ZERO_VALUE);
+        char payload_6[50] = "\"}";
         strcat(payload_0, x_clockwise);
         strcat(payload_0, payload_1);
         strcat(payload_0, x_anticlockwise);
@@ -213,6 +219,10 @@ void gateway_serial_handler(void *pvParam)
         strcat(payload_0, payload_3);
         strcat(payload_0, y_anticlockwise);
         strcat(payload_0, payload_4);
+        strcat(payload_0, vibration);
+        strcat(payload_0, payload_5);
+        strcat(payload_0, noise);
+        strcat(payload_0, payload_6);
         gateway_serial.println(payload_0);
         red_led.toggle();
         orange_led.toggle();
@@ -220,31 +230,35 @@ void gateway_serial_handler(void *pvParam)
         green_led.digital_write(0);
       }
 
-      else if (!angle_values.x_clockwise && angle_values.y_clockwise)
+      else if (!sensor_values.angle_values.x_clockwise && sensor_values.angle_values.y_clockwise)
       {
-        char payload_0[350] = "{\"x_clockwise\":\"";
+        char payload_0[350] = "{\"xClockWise\":\"";
         strcpy(x_clockwise, ZERO_VALUE);
-        char payload_1[50] = "\",\"x_anticlockwise\":\"";
-        if (angle_values.x_axis > 0)
+        char payload_1[50] = "\",\"xAntiClockWise\":\"";
+        if (sensor_values.angle_values.x_axis > 0)
         {
-          tostring(x_anticlockwise, angle_values.x_axis);
+          tostring(x_anticlockwise, sensor_values.angle_values.x_axis);
         }
         else
         {
           strcpy(x_anticlockwise, ZERO_VALUE);
         }
-        char payload_2[50] = "\",\"y_clockwise\":\"";
-        if (angle_values.y_axis > 0)
+        char payload_2[50] = "\",\"yClockWise\":\"";
+        if (sensor_values.angle_values.y_axis > 0)
         {
-          tostring(y_clockwise, angle_values.y_axis);
+          tostring(y_clockwise, sensor_values.angle_values.y_axis);
         }
         else
         {
           strcpy(y_clockwise, ZERO_VALUE);
         }
-        char payload_3[50] = "\",\"y_anticlockwise\":\"";
+        char payload_3[50] = "\",\"yAntiClockWise\":\"";
         strcpy(y_anticlockwise, ZERO_VALUE);
-        char payload_4[50] = "\"}";
+        char payload_4[50] = "\",\"vibration\":\"";
+        tostring(vibration,sensor_values.vibration_value);
+        char payload_5[50] = "\",\"noise\":\"";
+        strcpy(noise,ZERO_VALUE);
+        char payload_6[50] = "\"}";
         strcat(payload_0, x_clockwise);
         strcat(payload_0, payload_1);
         strcat(payload_0, x_anticlockwise);
@@ -253,6 +267,10 @@ void gateway_serial_handler(void *pvParam)
         strcat(payload_0, payload_3);
         strcat(payload_0, y_anticlockwise);
         strcat(payload_0, payload_4);
+        strcat(payload_0, vibration);
+        strcat(payload_0, payload_5);
+        strcat(payload_0, noise);
+        strcat(payload_0, payload_6);
         gateway_serial.println(payload_0);
         orange_led.toggle();
         green_led.toggle();
@@ -260,31 +278,35 @@ void gateway_serial_handler(void *pvParam)
         blue_led.digital_write(0);
       }
 
-      else if (!angle_values.x_clockwise && !angle_values.y_clockwise)
+      else if (!sensor_values.angle_values.x_clockwise && !sensor_values.angle_values.y_clockwise)
       {
-        char payload_0[350] = "{\"x_clockwise\":\"";
+        char payload_0[350] = "{\"xClockWise\":\"";
         strcpy(x_clockwise, ZERO_VALUE);
-        char payload_1[50] = "\",\"x_anticlockwise\":\"";
-        if (angle_values.x_axis > 0)
+        char payload_1[50] = "\",\"xAntiClockWise\":\"";
+        if (sensor_values.angle_values.x_axis > 0)
         {
-          tostring(x_anticlockwise, angle_values.x_axis);
+          tostring(x_anticlockwise, sensor_values.angle_values.x_axis);
         }
         else
         {
           strcpy(x_anticlockwise, ZERO_VALUE);
         }
-        char payload_2[50] = "\",\"y_clockwise\":\"";
+        char payload_2[50] = "\",\"yClockWise\":\"";
         strcpy(y_clockwise, ZERO_VALUE);
-        char payload_3[50] = "\",\"y_anticlockwise\":\"";
-        if (angle_values.y_axis > 0)
+        char payload_3[50] = "\",\"yAntiClockWise\":\"";
+        if (sensor_values.angle_values.y_axis > 0)
         {
-          tostring(y_anticlockwise, angle_values.y_axis);
+          tostring(y_anticlockwise, sensor_values.angle_values.y_axis);
         }
         else
         {
           strcpy(y_anticlockwise, ZERO_VALUE);
         }
-        char payload_4[50] = "\"}";
+        char payload_4[50] = "\",\"vibration\":\"";
+        tostring(vibration,sensor_values.vibration_value);
+        char payload_5[50] = "\",\"noise\":\"";
+        strcpy(noise,ZERO_VALUE);
+        char payload_6[50] = "\"}";
         strcat(payload_0, x_clockwise);
         strcat(payload_0, payload_1);
         strcat(payload_0, x_anticlockwise);
@@ -293,6 +315,10 @@ void gateway_serial_handler(void *pvParam)
         strcat(payload_0, payload_3);
         strcat(payload_0, y_anticlockwise);
         strcat(payload_0, payload_4);
+        strcat(payload_0, vibration);
+        strcat(payload_0, payload_5);
+        strcat(payload_0, noise);
+        strcat(payload_0, payload_6);
         gateway_serial.println(payload_0);
         green_led.toggle();
         blue_led.toggle();
@@ -300,31 +326,35 @@ void gateway_serial_handler(void *pvParam)
         red_led.digital_write(0);
       }
 
-      else if (angle_values.x_clockwise && !angle_values.y_clockwise)
+      else if (sensor_values.angle_values.x_clockwise && !sensor_values.angle_values.y_clockwise)
       {
-        char payload_0[350] = "{\"x_clockwise\":\"";
-        if (angle_values.x_axis > 0)
+        char payload_0[350] = "{\"xClockWise\":\"";
+        if (sensor_values.angle_values.x_axis > 0)
         {
-          tostring(x_clockwise, angle_values.x_axis);
+          tostring(x_clockwise, sensor_values.angle_values.x_axis);
         }
         else
         {
           strcpy(x_clockwise, ZERO_VALUE);
         }
-        char payload_1[50] = "\",\"x_anticlockwise\":\"";
+        char payload_1[50] = "\",\"xAntiClockWise\":\"";
         strcpy(x_anticlockwise, ZERO_VALUE);
-        char payload_2[50] = "\",\"y_clockwise\":\"";
+        char payload_2[50] = "\",\"yClockWise\":\"";
         strcpy(y_clockwise, ZERO_VALUE);
-        char payload_3[50] = "\",\"y_anticlockwise\":\"";
-        if (angle_values.y_axis > 0)
+        char payload_3[50] = "\",\"yAntiClockWise\":\"";
+        if (sensor_values.angle_values.y_axis > 0)
         {
-          tostring(y_anticlockwise, angle_values.y_axis);
+          tostring(y_anticlockwise, sensor_values.angle_values.y_axis);
         }
         else
         {
           strcpy(y_anticlockwise, ZERO_VALUE);
         }
-        char payload_4[50] = "\"}";
+        char payload_4[50] = "\",\"vibration\":\"";
+        tostring(vibration,sensor_values.vibration_value);
+        char payload_5[50] = "\",\"noise\":\"";
+        strcpy(noise,ZERO_VALUE);
+        char payload_6[50] = "\"}";
         strcat(payload_0, x_clockwise);
         strcat(payload_0, payload_1);
         strcat(payload_0, x_anticlockwise);
@@ -333,6 +363,10 @@ void gateway_serial_handler(void *pvParam)
         strcat(payload_0, payload_3);
         strcat(payload_0, y_anticlockwise);
         strcat(payload_0, payload_4);
+        strcat(payload_0, vibration);
+        strcat(payload_0, payload_5);
+        strcat(payload_0, noise);
+        strcat(payload_0, payload_6);
         gateway_serial.println(payload_0);
         red_led.toggle();
         blue_led.toggle();
@@ -352,12 +386,17 @@ void sensor_handler(void *pvParam)
   accel_sensor.initialize();
   /* Structure to hold accel angle values */
   custom_libraries::Angle_values angle_values;
+  /* Struct to hold sensor_data */
+  Sensor_values sensor_values;
   while (1)
   {
     /* Get accelerometer angle values */
     angle_values = accel_sensor.read_angles();
+    /* Store accel values */
+    sensor_values.angle_values = angle_values;
+    sensor_values.vibration_value = adc_value;
     /* Check if item was sucessfully added to queue */
-    if (xQueueSend(sensor_queue, (void *)&angle_values, (TickType_t)0 == pdPASS))
+    if (xQueueSend(sensor_queue, (void *)&sensor_values, (TickType_t)0 == pdPASS))
     {
       /* Item added to queue succesfully */
     }
@@ -400,12 +439,12 @@ int main(void)
    * Set-up vibration sensor ADC interrupts
    * (When using FreeRTOS interrupt priority should not below 0x05)
    */
-  NVIC_SetPriority(ADC_IRQn, 0x05);
+  NVIC_SetPriority(ADC_IRQn, 0x06);
   NVIC_EnableIRQ(ADC_IRQn);
   /**
    * Create queue to hold accelerometer angle values
    */
-  sensor_queue = xQueueCreate(10, sizeof(custom_libraries::Angle_values));
+  sensor_queue = xQueueCreate(10, sizeof(Sensor_values));
   /**
    * Create adc timer
    */
@@ -414,6 +453,9 @@ int main(void)
                             pdTRUE,
                             (void*)0,
                             adc_timer_callback);
+  if(adc_timer != NULL){
+    xTimerStart(adc_timer,0);
+  }
 
   /* create system tasks */
   xTaskCreate(motor_controller,
