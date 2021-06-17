@@ -89,7 +89,7 @@ custom_libraries::_GPIO blue_led(GPIOD, 15);
 /**
  * Create vibration sensor object
  */
-custom_libraries::_ADC vibration_sensor(ADC1, GPIOA, 1, custom_libraries::ch1, custom_libraries::FAST);
+custom_libraries::_ADC vibration_sensor(ADC1, GPIOA, 6, custom_libraries::ch6, custom_libraries::SLOW);
 
 /**
  * Task handles
@@ -207,7 +207,12 @@ void gateway_serial_handler(void *pvParam)
         char payload_3[50] = "\",\"yAntiClockWise\":\"";
         strcpy(y_anticlockwise, ZERO_VALUE);
         char payload_4[50] = "\",\"vibration\":\"";
-        tostring(vibration,sensor_values.vibration_value);
+        if (sensor_values.vibration_value > 0){
+          tostring(vibration,sensor_values.vibration_value);
+        } 
+        else{
+          strcpy(vibration,ZERO_VALUE);
+        }
         char payload_5[50] = "\",\"noise\":\"";
         strcpy(noise,ZERO_VALUE);
         char payload_6[50] = "\"}";
@@ -255,7 +260,12 @@ void gateway_serial_handler(void *pvParam)
         char payload_3[50] = "\",\"yAntiClockWise\":\"";
         strcpy(y_anticlockwise, ZERO_VALUE);
         char payload_4[50] = "\",\"vibration\":\"";
-        tostring(vibration,sensor_values.vibration_value);
+        if (sensor_values.vibration_value > 0){
+          tostring(vibration,sensor_values.vibration_value);
+        } 
+        else{
+          strcpy(vibration,ZERO_VALUE);
+        }
         char payload_5[50] = "\",\"noise\":\"";
         strcpy(noise,ZERO_VALUE);
         char payload_6[50] = "\"}";
@@ -303,7 +313,12 @@ void gateway_serial_handler(void *pvParam)
           strcpy(y_anticlockwise, ZERO_VALUE);
         }
         char payload_4[50] = "\",\"vibration\":\"";
-        tostring(vibration,sensor_values.vibration_value);
+        if (sensor_values.vibration_value > 0){
+          tostring(vibration,sensor_values.vibration_value);
+        } 
+        else{
+          strcpy(vibration,ZERO_VALUE);
+        }
         char payload_5[50] = "\",\"noise\":\"";
         strcpy(noise,ZERO_VALUE);
         char payload_6[50] = "\"}";
@@ -351,7 +366,12 @@ void gateway_serial_handler(void *pvParam)
           strcpy(y_anticlockwise, ZERO_VALUE);
         }
         char payload_4[50] = "\",\"vibration\":\"";
-        tostring(vibration,sensor_values.vibration_value);
+        if (sensor_values.vibration_value > 0){
+          tostring(vibration,sensor_values.vibration_value);
+        } 
+        else{
+          strcpy(vibration,ZERO_VALUE);
+        }
         char payload_5[50] = "\",\"noise\":\"";
         strcpy(noise,ZERO_VALUE);
         char payload_6[50] = "\"}";
@@ -433,7 +453,7 @@ int main(void)
 {
   /* Initialize system clock */
   system_clock.initialize();
-  /* Initialize vibration sensor */
+    /* Initialize vibration sensor */
   vibration_sensor.initialize();
   /**
    * Set-up vibration sensor ADC interrupts
