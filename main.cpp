@@ -13,6 +13,7 @@
 #include <USART.h>
 #include <GPIO.h>
 #include <ADC.h>
+#include <Timerconfiguration.h>
 
 /**
  * To Do

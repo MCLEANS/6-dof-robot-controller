@@ -10,6 +10,7 @@ CXX_SOURCES += LIS3DH.cpp
 CXX_SOURCES += USART.cpp
 CXX_SOURCES += GPIO.cpp
 CXX_SOURCES += ADC.cpp
+CXX_SOURCES += Timerconfiguration.cpp
 
 CXX_OBJS += main.o
 CXX_OBJS += clockconfig.o
@@ -20,6 +21,7 @@ CXX_OBJS += LIS3DH.o
 CXX_OBJS += USART.o
 CXX_OBJS += GPIO.o 
 CXX_OBJS += ADC.o
+CXX_OBJS += Timerconfiguration.o
 
 
 
