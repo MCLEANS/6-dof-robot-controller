@@ -31,6 +31,12 @@
 
 #define ZERO_VALUE "0"
 
+/**
+ * Hardware timer constants
+ */
+#define PSC_VALUE 640
+#define ARR_VALUE 66
+
 /* variable to hold ADC value */
 uint16_t adc_value = 0;
 
@@ -93,6 +99,11 @@ custom_libraries::_GPIO blue_led(GPIOD, 15);
 custom_libraries::_ADC vibration_sensor(ADC1, GPIOA, 6, custom_libraries::ch6, custom_libraries::SLOW);
 
 /**
+ * Hardware timer objects
+ */
+custom_libraries::Timer_configuration delay_timer(TIM3,PSC_VALUE,ARR_VALUE);
+
+/**
  * Task handles
  */
 TaskHandle_t motor_control_task;
@@ -117,6 +128,15 @@ void adc_timer_callback(TimerHandle_t xTimer){
   vibration_sensor.count++;
 }
 
+/**
+ * Timer Interrupt handler
+ */
+extern "C" void TIM3_IRQHandler(void){
+	if(TIM3->SR & TIM_SR_UIF){
+		TIM3->SR &= ~TIM_SR_UIF;
+		vibration_sensor.count ++;
+	}
+}
 
 /**
  * ADC interrupts handler
@@ -454,8 +474,16 @@ int main(void)
 {
   /* Initialize system clock */
   system_clock.initialize();
-    /* Initialize vibration sensor */
+  /* Initialize vibration sensor */
   vibration_sensor.initialize();
+  /* Initialize the delay timer */
+  delay_timer.initialize();
+  /**
+   * Set-up delay timer interrupts
+   */
+  NVIC_SetPriority(TIM3_IRQn,0x03);
+	NVIC_EnableIRQ(TIM3_IRQn);
+
   /**
    * Set-up vibration sensor ADC interrupts
    * (When using FreeRTOS interrupt priority should not below 0x05)
