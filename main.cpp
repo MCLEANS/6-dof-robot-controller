@@ -115,18 +115,6 @@ TaskHandle_t gateway_serial_handler_task;
  */
 QueueHandle_t sensor_queue;
 
-/**
- * Timer handles
- */
-TimerHandle_t adc_timer;
-
-/**
- * Software timer to tick every 1 ms
- */
-void adc_timer_callback(TimerHandle_t xTimer){
-  /* Increment the vibration sensor delay counter */
-  vibration_sensor.count++;
-}
 
 /**
  * Timer Interrupt handler
@@ -494,17 +482,6 @@ int main(void)
    * Create queue to hold accelerometer angle values
    */
   sensor_queue = xQueueCreate(10, sizeof(Sensor_values));
-  /**
-   * Create adc timer
-   */
-  adc_timer = xTimerCreate("Timer to be used by ADC",
-                            pdMS_TO_TICKS(1),
-                            pdTRUE,
-                            (void*)0,
-                            adc_timer_callback);
-  if(adc_timer != NULL){
-    xTimerStart(adc_timer,0);
-  }
 
   /* create system tasks */
   xTaskCreate(motor_controller,
