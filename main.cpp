@@ -120,8 +120,8 @@ TimerHandle_t soft_delay;
  * Delay timer callback
  */
 void delay_timer_callback(TimerHandle_t xTimer){
-  vibration_sensor.count++;
-  red_led.toggle();
+ /* Initiate new ADC conversion */
+  
 }
 
 /**
@@ -234,7 +234,7 @@ void gateway_serial_handler(void *pvParam)
         strcat(payload_0, noise);
         strcat(payload_0, payload_6);
         gateway_serial.println(payload_0);
-       // red_led.toggle();
+        red_led.toggle();
         orange_led.toggle();
         blue_led.digital_write(0);
         green_led.digital_write(0);
@@ -393,13 +393,13 @@ void gateway_serial_handler(void *pvParam)
         strcat(payload_0, noise);
         strcat(payload_0, payload_6);
         gateway_serial.println(payload_0);
-        //red_led.toggle();
+        red_led.toggle();
         blue_led.toggle();
         orange_led.digital_write(0);
         green_led.digital_write(0);
       }
     }
-    vTaskDelay(pdMS_TO_TICKS(50));
+    vTaskDelay(pdMS_TO_TICKS(30));
   }
 }
 /**
@@ -479,7 +479,7 @@ int main(void)
    * Create software timer
    */
   soft_delay =  xTimerCreate("Software delay timer",
-                pdMS_TO_TICKS(1000),
+                pdMS_TO_TICKS(20),
                 pdTRUE,
                 (void*)0,
                 delay_timer_callback);
