@@ -98,10 +98,6 @@ custom_libraries::_GPIO blue_led(GPIOD, 15);
  */
 custom_libraries::_ADC vibration_sensor(ADC1, GPIOA, 4, custom_libraries::ch4, custom_libraries::SLOW);
 
-/**
- * Hardware timer objects
- */
-custom_libraries::Timer_configuration delay_timer(TIM3,PSC_VALUE,ARR_VALUE);
 
 /**
  * Task handles
@@ -120,15 +116,12 @@ QueueHandle_t sensor_queue;
  */
 TimerHandle_t soft_delay;
 
-
 /**
- * Timer Interrupt handler
+ * Delay timer callback
  */
-extern "C" void TIM3_IRQHandler(void){
-	if(TIM3->SR & TIM_SR_UIF){
-		TIM3->SR &= ~TIM_SR_UIF;
-		red_led.toggle();
-	}
+void delay_timer_callback(TimerHandle_t xTimer){
+  vibration_sensor.count++;
+  red_led.toggle();
 }
 
 /**
@@ -465,13 +458,7 @@ int main(void)
 {
   /* Initialize system clock */
   system_clock.initialize();
-  /* Initialize the delay timer */
-  delay_timer.initialize();
-  /**
-   * Set-up delay timer interrupts
-   */
-  NVIC_SetPriority(TIM3_IRQn, 0x06);
-	NVIC_EnableIRQ(TIM3_IRQn);
+
   /**
    * Initialize vibration sensor 
    **/
@@ -492,7 +479,7 @@ int main(void)
    * Create software timer
    */
   soft_delay =  xTimerCreate("Software delay timer",
-                pdMS_TO_TICKS(1),
+                pdMS_TO_TICKS(1000),
                 pdTRUE,
                 (void*)0,
                 delay_timer_callback);
