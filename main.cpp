@@ -35,7 +35,7 @@
  * Hardware timer constants
  */
 #define PSC_VALUE 640
-#define ARR_VALUE 66
+#define ARR_VALUE 62000
 
 /* variable to hold ADC value */
 uint16_t adc_value = 0;
@@ -96,7 +96,7 @@ custom_libraries::_GPIO blue_led(GPIOD, 15);
 /**
  * Create vibration sensor object
  */
-custom_libraries::_ADC vibration_sensor(ADC1, GPIOA, 6, custom_libraries::ch6, custom_libraries::SLOW);
+custom_libraries::_ADC vibration_sensor(ADC1, GPIOA, 4, custom_libraries::ch4, custom_libraries::SLOW);
 
 /**
  * Hardware timer objects
@@ -122,17 +122,15 @@ QueueHandle_t sensor_queue;
 extern "C" void TIM3_IRQHandler(void){
 	if(TIM3->SR & TIM_SR_UIF){
 		TIM3->SR &= ~TIM_SR_UIF;
-		vibration_sensor.count ++;
+		red_led.toggle();
 	}
 }
 
 /**
  * ADC interrupts handler
  */
-extern "C" void ADC_IRQHandler(void)
-{
-  if (ADC1->SR & ADC_SR_EOC)
-  {
+extern "C" void ADC_IRQHandler(void){
+  if (ADC1->SR & ADC_SR_EOC){
     ADC1->SR &= ~ADC_SR_EOC;
     adc_value = ADC1->DR;
     ADC1->CR2 |= ADC_CR2_SWSTART;
@@ -193,7 +191,7 @@ void gateway_serial_handler(void *pvParam)
       /* Accel values have been received successfully */
       if (sensor_values.angle_values.x_clockwise && sensor_values.angle_values.y_clockwise)
       {
-        char payload_0[350] = "{\"xClockWise\":\"";
+        char payload_0[1024] = "{\"xClockWise\":\"";
         if (sensor_values.angle_values.x_axis > 0)
         {
           tostring(x_clockwise, sensor_values.angle_values.x_axis);
@@ -238,7 +236,7 @@ void gateway_serial_handler(void *pvParam)
         strcat(payload_0, noise);
         strcat(payload_0, payload_6);
         gateway_serial.println(payload_0);
-        red_led.toggle();
+       // red_led.toggle();
         orange_led.toggle();
         blue_led.digital_write(0);
         green_led.digital_write(0);
@@ -246,7 +244,7 @@ void gateway_serial_handler(void *pvParam)
 
       else if (!sensor_values.angle_values.x_clockwise && sensor_values.angle_values.y_clockwise)
       {
-        char payload_0[350] = "{\"xClockWise\":\"";
+        char payload_0[1024] = "{\"xClockWise\":\"";
         strcpy(x_clockwise, ZERO_VALUE);
         char payload_1[50] = "\",\"xAntiClockWise\":\"";
         if (sensor_values.angle_values.x_axis > 0)
@@ -299,7 +297,7 @@ void gateway_serial_handler(void *pvParam)
 
       else if (!sensor_values.angle_values.x_clockwise && !sensor_values.angle_values.y_clockwise)
       {
-        char payload_0[350] = "{\"xClockWise\":\"";
+        char payload_0[1024] = "{\"xClockWise\":\"";
         strcpy(x_clockwise, ZERO_VALUE);
         char payload_1[50] = "\",\"xAntiClockWise\":\"";
         if (sensor_values.angle_values.x_axis > 0)
@@ -352,7 +350,7 @@ void gateway_serial_handler(void *pvParam)
 
       else if (sensor_values.angle_values.x_clockwise && !sensor_values.angle_values.y_clockwise)
       {
-        char payload_0[350] = "{\"xClockWise\":\"";
+        char payload_0[1024] = "{\"xClockWise\":\"";
         if (sensor_values.angle_values.x_axis > 0)
         {
           tostring(x_clockwise, sensor_values.angle_values.x_axis);
@@ -397,7 +395,7 @@ void gateway_serial_handler(void *pvParam)
         strcat(payload_0, noise);
         strcat(payload_0, payload_6);
         gateway_serial.println(payload_0);
-        red_led.toggle();
+        //red_led.toggle();
         blue_led.toggle();
         orange_led.digital_write(0);
         green_led.digital_write(0);
@@ -462,21 +460,23 @@ int main(void)
 {
   /* Initialize system clock */
   system_clock.initialize();
-  /* Initialize vibration sensor */
-  vibration_sensor.initialize();
   /* Initialize the delay timer */
   delay_timer.initialize();
   /**
    * Set-up delay timer interrupts
    */
-  NVIC_SetPriority(TIM3_IRQn,0x03);
+  NVIC_SetPriority(TIM3_IRQn, 0x06);
 	NVIC_EnableIRQ(TIM3_IRQn);
+  /**
+   * Initialize vibration sensor 
+   **/
+  vibration_sensor.initialize();
 
   /**
    * Set-up vibration sensor ADC interrupts
    * (When using FreeRTOS interrupt priority should not below 0x05)
    */
-  NVIC_SetPriority(ADC_IRQn, 0x06);
+  NVIC_SetPriority(ADC_IRQn, 0x07);
   NVIC_EnableIRQ(ADC_IRQn);
   /**
    * Create queue to hold accelerometer angle values
@@ -488,19 +488,19 @@ int main(void)
               "Motor Control Task",
               100,
               NULL,
-              2,
+              1,
               &motor_control_task);
   xTaskCreate(sensor_handler,
               "Task to handle reading data from accelerometer and vibration sensor",
               200,
               NULL,
-              2,
+              1,
               &sensor_handler_task);
   xTaskCreate(gateway_serial_handler,
               "Task to handle sending data to the gateway",
               1000,
               NULL,
-              2,
+              1,
               &gateway_serial_handler_task);
 
   /* Start system scheduler */

@@ -32,8 +32,6 @@ private:
 	ADC_channel channel;
 	Sampling_rate sample_rate;
 
-
-
 private:
 	void delay_ms(uint32_t duration);
 

@@ -210,8 +210,8 @@ _ADC::_ADC(ADC_TypeDef *ADC_,GPIO_TypeDef *GPIO,uint8_t PIN,ADC_channel channel,
 }
 
 void _ADC::delay_ms(uint32_t duration){
-	this->count = 0;
-	while(this->count < duration){}
+	count = 0;
+	while(count < duration){}
 }
 
 void _ADC::initialize(){
