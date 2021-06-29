@@ -16,9 +16,10 @@
 #include <Timerconfiguration.h>
 
 /**
- * To Do
- * Add Queue to hold accel data and read data from the queue in the gateway serial handler
+ * RTOS constants
  */
+#define SERIAL_HANDLER_BLOCK_TIME 2000
+#define SENSOR_HANDLER_BLOCK_TIME 500
 
 /**
  * LIS3DH sensor Pin Mapping
@@ -399,7 +400,7 @@ void gateway_serial_handler(void *pvParam)
         green_led.digital_write(0);
       }
     }
-    vTaskDelay(pdMS_TO_TICKS(30));
+    vTaskDelay(pdMS_TO_TICKS(SERIAL_HANDLER_BLOCK_TIME));
   }
 }
 /**
@@ -426,7 +427,7 @@ void sensor_handler(void *pvParam)
       /* Item added to queue succesfully */
     }
     /* Block the task */
-    vTaskDelay(pdMS_TO_TICKS(20));
+    vTaskDelay(pdMS_TO_TICKS(SENSOR_HANDLER_BLOCK_TIME));
   }
 }
 
