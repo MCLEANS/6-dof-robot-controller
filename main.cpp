@@ -469,7 +469,7 @@ int main(void)
    * Set-up vibration sensor ADC interrupts
    * (When using FreeRTOS interrupt priority should not below 0x05)
    */
-  NVIC_SetPriority(ADC_IRQn, 0x07);
+  NVIC_SetPriority(ADC_IRQn, 0x06);
   NVIC_EnableIRQ(ADC_IRQn);
   /**
    * Create queue to hold accelerometer angle values
