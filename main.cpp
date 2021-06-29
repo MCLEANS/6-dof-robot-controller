@@ -480,10 +480,10 @@ int main(void)
    * Create software timer
    */
   soft_delay =  xTimerCreate("Software delay timer",
-                pdMS_TO_TICKS(20),
-                pdTRUE,
-                (void*)0,
-                delay_timer_callback);
+                              pdMS_TO_TICKS(20),
+                              pdTRUE,
+                              (void*)0,
+                              delay_timer_callback);
   
   if(soft_delay != NULL){
     xTimerStart(soft_delay,0);
