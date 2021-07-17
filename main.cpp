@@ -13,13 +13,12 @@
 #include <USART.h>
 #include <GPIO.h>
 #include <ADC.h>
-#include <Timerconfiguration.h>
 
 /**
  * RTOS constants
  */
-#define SERIAL_HANDLER_BLOCK_TIME 2000
-#define SENSOR_HANDLER_BLOCK_TIME 500
+#define SERIAL_HANDLER_BLOCK_TIME 100
+#define SENSOR_HANDLER_BLOCK_TIME 50
 
 /**
  * LIS3DH sensor Pin Mapping
@@ -50,21 +49,47 @@ struct Sensor_values{
 /**
  * Servo motor objects
  */
+
 custom_libraries::MG996R base_servo(TIM4,
                                     custom_libraries::channel1,
                                     GPIOB,
                                     6,
                                     custom_libraries::AF2);
+
 custom_libraries::MG996R shoulder_servo(TIM4,
                                         custom_libraries::channel2,
                                         GPIOB,
                                         7,
                                         custom_libraries::AF2);
-custom_libraries::MG996R wrist_servo(TIM4,
+
+custom_libraries::MG996R elbow_servo(TIM3,
+                                     custom_libraries::channel3,
+                                     GPIOB,
+                                     0,
+                                     custom_libraries::AF2);     
+
+custom_libraries::MG996R wrist_servo(TIM3,
+                                     custom_libraries::channel4,
+                                     GPIOB,
+                                     1,
+                                     custom_libraries::AF2);                                  
+
+/********************************************************************/
+custom_libraries::MG996R wrist_servo1(TIM4,
                                      custom_libraries::channel3,
                                      GPIOB,
                                      8,
                                      custom_libraries::AF2);
+custom_libraries::MG996R base_servo1(TIM4,
+                                    custom_libraries::channel4,
+                                    GPIOB,
+                                    9,
+                                    custom_libraries::AF2);
+
+/********************************************************************/
+
+
+
 /**
  * System clock configuration
  */
@@ -93,6 +118,12 @@ custom_libraries::_GPIO green_led(GPIOD, 12);
 custom_libraries::_GPIO orange_led(GPIOD, 13);
 custom_libraries::_GPIO red_led(GPIOD, 14);
 custom_libraries::_GPIO blue_led(GPIOD, 15);
+
+custom_libraries::_GPIO motor_control_led(GPIOD, 0);
+custom_libraries::_GPIO sensor_handler_led(GPIOD, 1);
+custom_libraries::_GPIO gateway_handler_led(GPIOD, 2);
+custom_libraries::_GPIO sensor_queue_send_led(GPIOD, 5);
+custom_libraries::_GPIO sensor_queue_receive_led(GPIOD, 4);
 
 /**
  * Create vibration sensor object
@@ -167,11 +198,16 @@ void gateway_serial_handler(void *pvParam)
   orange_led.pin_mode(custom_libraries::OUTPUT);
   red_led.pin_mode(custom_libraries::OUTPUT);
   blue_led.pin_mode(custom_libraries::OUTPUT);
+  gateway_handler_led.pin_mode(custom_libraries::OUTPUT);
+  sensor_queue_receive_led.pin_mode(custom_libraries::OUTPUT);
 
   green_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
   orange_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
   red_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
   blue_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
+  gateway_handler_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
+  sensor_queue_receive_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
+
   /* variable to hold values received from queue */
   Sensor_values sensor_values;
   while (1)
@@ -179,6 +215,7 @@ void gateway_serial_handler(void *pvParam)
     /* check if there is data available in queue and retreive */
     if (xQueueReceive(sensor_queue, &sensor_values, portMAX_DELAY) == pdPASS)
     {
+      sensor_queue_receive_led.toggle();
       /* character arrays to hold values */
       char x_clockwise[10];
       char x_anticlockwise[10];
@@ -400,6 +437,7 @@ void gateway_serial_handler(void *pvParam)
         green_led.digital_write(0);
       }
     }
+    gateway_handler_led.toggle();
     vTaskDelay(pdMS_TO_TICKS(SERIAL_HANDLER_BLOCK_TIME));
   }
 }
@@ -408,6 +446,10 @@ void gateway_serial_handler(void *pvParam)
  */
 void sensor_handler(void *pvParam)
 {
+  sensor_handler_led.pin_mode(custom_libraries::OUTPUT);
+  sensor_handler_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
+  sensor_queue_send_led.pin_mode(custom_libraries::OUTPUT);
+  sensor_queue_send_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
   /* Initialize the motion sensor */
   accel_sensor.initialize();
   /* Structure to hold accel angle values */
@@ -425,7 +467,9 @@ void sensor_handler(void *pvParam)
     if (xQueueSend(sensor_queue, (void *)&sensor_values, (TickType_t)0 == pdPASS))
     {
       /* Item added to queue succesfully */
+      sensor_queue_send_led.toggle();
     }
+    sensor_handler_led.toggle();
     /* Block the task */
     vTaskDelay(pdMS_TO_TICKS(SENSOR_HANDLER_BLOCK_TIME));
   }
@@ -436,22 +480,54 @@ void sensor_handler(void *pvParam)
  */
 void motor_controller(void *pvParam)
 {
+  motor_control_led.pin_mode(custom_libraries::OUTPUT);
+  motor_control_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
   /* base motor rest position */
-  base_servo.move_to_angle(90);
   while (1)
   {
     base_servo.move_to_angle(20);
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    motor_control_led.toggle();
+    vTaskDelay(pdMS_TO_TICKS(100));
     shoulder_servo.move_to_angle(60);
+    motor_control_led.toggle();
+    vTaskDelay(pdMS_TO_TICKS(100));
+    elbow_servo.move_to_angle(180);
+    motor_control_led.toggle();
+    vTaskDelay(pdMS_TO_TICKS(100));
+    wrist_servo.move_to_angle(180);
+    motor_control_led.toggle();
+    vTaskDelay(pdMS_TO_TICKS(100));
+    elbow_servo.move_to_angle(0);
+    motor_control_led.toggle();
+    vTaskDelay(pdMS_TO_TICKS(100));
+    wrist_servo.move_to_angle(0);
+    motor_control_led.toggle();
     vTaskDelay(pdMS_TO_TICKS(300));
-    shoulder_servo.move_to_angle(100);
-    vTaskDelay(pdMS_TO_TICKS(300));
+    shoulder_servo.move_to_angle(120);
+    motor_control_led.toggle();
+    vTaskDelay(pdMS_TO_TICKS(100));
     base_servo.move_to_angle(120);
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    motor_control_led.toggle();
+    vTaskDelay(pdMS_TO_TICKS(100));
     shoulder_servo.move_to_angle(60);
+    motor_control_led.toggle();
+    vTaskDelay(pdMS_TO_TICKS(100));
+    elbow_servo.move_to_angle(180);
+    motor_control_led.toggle();
+    vTaskDelay(pdMS_TO_TICKS(100));
+    wrist_servo.move_to_angle(180);
+    motor_control_led.toggle();
+    vTaskDelay(pdMS_TO_TICKS(100));
+    elbow_servo.move_to_angle(0);
+    motor_control_led.toggle();
+    vTaskDelay(pdMS_TO_TICKS(100));
+    wrist_servo.move_to_angle(0);
+    motor_control_led.toggle();
     vTaskDelay(pdMS_TO_TICKS(300));
-    shoulder_servo.move_to_angle(100);
+    shoulder_servo.move_to_angle(120);
+    motor_control_led.toggle();
     vTaskDelay(pdMS_TO_TICKS(300));
+    
   }
 }
 
@@ -496,6 +572,7 @@ int main(void)
               NULL,
               1,
               &motor_control_task);
+ 
   xTaskCreate(sensor_handler,
               "Task to handle reading data from accelerometer and vibration sensor",
               200,
