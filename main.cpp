@@ -122,8 +122,8 @@ custom_libraries::_GPIO blue_led(GPIOD, 15);
 custom_libraries::_GPIO motor_control_led(GPIOD, 0);
 custom_libraries::_GPIO sensor_handler_led(GPIOD, 1);
 custom_libraries::_GPIO gateway_handler_led(GPIOD, 2);
-custom_libraries::_GPIO sensor_queue_send_led(GPIOD, 5);
-custom_libraries::_GPIO sensor_queue_receive_led(GPIOD, 4);
+custom_libraries::_GPIO sensor_queue_send_led(GPIOD, 4);
+custom_libraries::_GPIO sensor_queue_receive_led(GPIOD, 6);
 
 /**
  * Create vibration sensor object
