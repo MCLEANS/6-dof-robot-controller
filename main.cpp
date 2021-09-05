@@ -497,7 +497,7 @@ void motor_controller(void *pvParam)
     wrist_servo.move_to_angle(180);
     motor_control_led.toggle();
     vTaskDelay(pdMS_TO_TICKS(100));
-    elbow_servo.move_to_angle(0);
+    elbow_servo.move_to_angle(70);
     motor_control_led.toggle();
     vTaskDelay(pdMS_TO_TICKS(100));
     wrist_servo.move_to_angle(0);
@@ -515,18 +515,18 @@ void motor_controller(void *pvParam)
     elbow_servo.move_to_angle(180);
     motor_control_led.toggle();
     vTaskDelay(pdMS_TO_TICKS(100));
-    wrist_servo.move_to_angle(180);
+    wrist_servo.move_to_angle(90);
     motor_control_led.toggle();
     vTaskDelay(pdMS_TO_TICKS(100));
-    elbow_servo.move_to_angle(0);
+    elbow_servo.move_to_angle(70);
     motor_control_led.toggle();
     vTaskDelay(pdMS_TO_TICKS(100));
     wrist_servo.move_to_angle(0);
     motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(300));
+    vTaskDelay(pdMS_TO_TICKS(100));
     shoulder_servo.move_to_angle(120);
     motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(300));
+    vTaskDelay(pdMS_TO_TICKS(100));
     
   }
 }
