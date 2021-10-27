@@ -467,53 +467,15 @@ void sensor_handler(void *pvParam)
  */
 void motor_controller(void *pvParam)
 {
+  /**
+   * NOTE : The motor control led is used to show servo motor movements
+   */
+
   motor_control_led.pin_mode(custom_libraries::OUTPUT);
   motor_control_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
   /* base motor rest position */
   while (1)
   {
-    base_servo.move_to_angle(20);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    shoulder_servo.move_to_angle(60);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    elbow_servo.move_to_angle(180);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    wrist_servo.move_to_angle(180);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    elbow_servo.move_to_angle(70);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    wrist_servo.move_to_angle(0);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(300));
-    shoulder_servo.move_to_angle(120);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    base_servo.move_to_angle(120);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    shoulder_servo.move_to_angle(60);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    elbow_servo.move_to_angle(180);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    wrist_servo.move_to_angle(90);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    elbow_servo.move_to_angle(70);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    wrist_servo.move_to_angle(0);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
-    shoulder_servo.move_to_angle(120);
-    motor_control_led.toggle();
-    vTaskDelay(pdMS_TO_TICKS(100));
     
   }
 }
@@ -553,6 +515,7 @@ int main(void)
               NULL,
               1,
               &sensor_handler_task);
+
   xTaskCreate(gateway_serial_handler,
               "Task to handle sending data to the gateway",
               1000,
