@@ -144,19 +144,6 @@ TaskHandle_t gateway_serial_handler_task;
 QueueHandle_t sensor_queue;
 
 /**
- * Timer handles
- */
-TimerHandle_t soft_delay;
-
-/**
- * Delay timer callback
- */
-void delay_timer_callback(TimerHandle_t xTimer){
- /* Initiate new ADC conversion */
-  
-}
-
-/**
  * ADC interrupts handler
  */
 extern "C" void ADC_IRQHandler(void){
@@ -551,19 +538,6 @@ int main(void)
    * Create queue to hold accelerometer angle values
    */
   sensor_queue = xQueueCreate(10, sizeof(Sensor_values));
-
-  /**
-   * Create software timer
-   */
-  soft_delay =  xTimerCreate("Software delay timer",
-                              pdMS_TO_TICKS(20),
-                              pdTRUE,
-                              (void*)0,
-                              delay_timer_callback);
-  
-  if(soft_delay != NULL){
-    xTimerStart(soft_delay,0);
-  }
 
   /* create system tasks */
   xTaskCreate(motor_controller,
