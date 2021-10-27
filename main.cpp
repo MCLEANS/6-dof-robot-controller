@@ -496,6 +496,7 @@ int main(void)
    */
   NVIC_SetPriority(ADC_IRQn, 0x06);
   NVIC_EnableIRQ(ADC_IRQn);
+
   /**
    * Create queue to hold accelerometer angle values
    */
@@ -528,5 +529,6 @@ int main(void)
 
   while (1)
   {
+    
   }
 }
