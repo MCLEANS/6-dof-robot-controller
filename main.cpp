@@ -38,7 +38,7 @@
 #define ARR_VALUE 62000
 
 /* variable to hold ADC value */
-uint16_t adc_value = 0;
+uint16_t raw_vibration_value = 0;
 
 /* Type to hold accel and vibration sensor values */
 struct Sensor_values{
@@ -149,7 +149,7 @@ QueueHandle_t sensor_queue;
 extern "C" void ADC_IRQHandler(void){
   if (ADC1->SR & ADC_SR_EOC){
     ADC1->SR &= ~ADC_SR_EOC;
-    adc_value = ADC1->DR;
+    raw_vibration_value = ADC1->DR;
     ADC1->CR2 |= ADC_CR2_SWSTART;
   }
 }
@@ -449,7 +449,8 @@ void sensor_handler(void *pvParam)
     angle_values = accel_sensor.read_angles();
     /* Store accel values */
     sensor_values.angle_values = angle_values;
-    sensor_values.vibration_value = adc_value;
+    /* Obtain vibration sensor ADC value */
+    sensor_values.vibration_value = raw_vibration_value;
     /* Check if item was sucessfully added to queue */
     if (xQueueSend(sensor_queue, (void *)&sensor_values, (TickType_t)0 == pdPASS))
     {
@@ -470,7 +471,6 @@ void motor_controller(void *pvParam)
   /**
    * NOTE : The motor control led is used to show servo motor movements
    */
-
   motor_control_led.pin_mode(custom_libraries::OUTPUT);
   motor_control_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
   /* base motor rest position */
