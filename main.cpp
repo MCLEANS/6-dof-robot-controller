@@ -112,6 +112,11 @@ custom_libraries::LIS3DH accel_sensor(SPI1,
 custom_libraries::USART gateway_serial(USART2, GPIOA, 3, 2, 9600);
 
 /**
+ * Serial degug console
+ */
+custom_libraries::USART debug_console(USART1, GPIOA, 10, 9, 9600);
+
+/**
  * Create LED objects
  */
 custom_libraries::_GPIO green_led(GPIOD, 12);
@@ -137,6 +142,7 @@ custom_libraries::_ADC vibration_sensor(ADC1, GPIOA, 4, custom_libraries::ch4, c
 TaskHandle_t motor_control_task;
 TaskHandle_t sensor_handler_task;
 TaskHandle_t gateway_serial_handler_task;
+TaskHandle_t debug_console_handler_task;
 
 /**
  * Queue handles
@@ -172,6 +178,13 @@ void tostring(char str[], int num)
     str[len - (i + 1)] = rem + '0'; //start storing string with max-1 index first
   }
   str[len] = '\0'; //null to end the string[max]
+}
+
+void debug_console_handler(void *pvParam){
+
+  while(1){
+
+  }
 }
 
 /**
@@ -523,6 +536,13 @@ int main(void)
               NULL,
               1,
               &gateway_serial_handler_task);
+
+  xTaskCreate(debug_console_handler,
+              "Task to handle serial debug console",
+              1000,
+              NULL,
+              1,
+              &debug_console_handler_task);
 
   /* Start system scheduler */
   vTaskStartScheduler();
