@@ -576,7 +576,7 @@ int main(void)
               "Motor Control Task",
               100,
               NULL,
-              1,
+              2,
               &motor_control_task);
  
   xTaskCreate(sensor_handler,
