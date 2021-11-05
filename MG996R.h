@@ -45,6 +45,7 @@ class MG996R : public PWM{
                 alternate_function pin_function);
         int map(long x, long in_min, long in_max, long out_min, long out_max);
         int get_duty_cycle_from_Angle(uint8_t angle);
+        uint8_t get_current_angle(void)const;
         void move_to_angle(uint16_t angle_to);
         ~MG996R();
 };

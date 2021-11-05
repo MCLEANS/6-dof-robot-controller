@@ -109,6 +109,13 @@ void MG996R::set_input_mode(){
 	PORT->MODER &= ~(1 << ((PIN*2)+1));
 }
 
+/**
+ * Get the current servo angle position
+ */
+uint8_t MG996R::get_current_angle(void)const{
+  return this->previous_angle;
+}
+
 MG996R::~MG996R(){
 
  }

@@ -188,6 +188,12 @@ void tostring(char str[], int num)
 
 /* Debug serial console */
 void debug_console_handler(void *pvParam){
+
+  char base_servo_angle[4];
+  char shoulder_servo_angle[4];
+  char elbow_servo_angle[4];
+  char wrist_servo_angle[4];
+  
   /* Initialize the degug console */
   debug_console.initialize();
   while(1){
@@ -213,10 +219,25 @@ void debug_console_handler(void *pvParam){
     else debug_console.println(STR_ERROR);
 
     /* Motor Position */
+    //convert integer angle to strings
+    tostring(base_servo_angle,base_servo.get_current_angle());
+    tostring(shoulder_servo_angle,shoulder_servo.get_current_angle());
+    tostring(elbow_servo_angle,elbow_servo.get_current_angle());
+    tostring(wrist_servo_angle,wrist_servo.get_current_angle());
+
     debug_console.println(STR_EMPTY);
     debug_console.println(STR_EMPTY);
     debug_console.println(STR_MOTOR_POSITION);
-    debug_console.println(STR_BASE_SERVO);
+    debug_console.print(STR_BASE_SERVO);
+    debug_console.println(base_servo_angle);
+    debug_console.print(STR_SHOULDER_SERVO);
+    debug_console.println(shoulder_servo_angle);
+    debug_console.print(STR_ELBOW_SERVO);
+    debug_console.println(elbow_servo_angle);
+    debug_console.print(STR_WRIST_SERVO);
+    debug_console.println(wrist_servo_angle);
+    debug_console.println(STR_EMPTY);
+    debug_console.println(STR_EMPTY);
 
     vTaskDelay(pdMS_TO_TICKS(2000));
   }
