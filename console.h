@@ -5,6 +5,11 @@
  * Highlight all console commands and strings here
  */
 
+/* FLAGS */
+bool serial_handler_state = false;
+bool sensor_handler_state = false;
+bool motor_handler_state = false;
+
 /* STRING LITERALS */
 char STR_SOFTWARE_VERSION[] = "SOFTWARE_VERSION : ";
 char STR_SENSOR_HANDLER[] = "SENSOR HANDLER : ";
