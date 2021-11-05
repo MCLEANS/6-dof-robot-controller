@@ -151,6 +151,11 @@ TaskHandle_t debug_console_handler_task;
 QueueHandle_t sensor_queue;
 
 /**
+ * Timer handles
+ */
+TimerHandle_t flag_reset_timer;
+
+/**
  * ADC interrupts handler
  */
 extern "C" void ADC_IRQHandler(void){
@@ -212,8 +217,8 @@ void debug_console_handler(void *pvParam){
     debug_console.println(STR_EMPTY);
     debug_console.println(STR_MOTOR_POSITION);
     debug_console.println(STR_BASE_SERVO);
-    
 
+    vTaskDelay(pdMS_TO_TICKS(2000));
   }
 }
 
@@ -468,6 +473,7 @@ void gateway_serial_handler(void *pvParam)
       }
     }
     gateway_handler_led.toggle();
+    serial_handler_state = true;
     vTaskDelay(pdMS_TO_TICKS(SERIAL_HANDLER_BLOCK_TIME));
   }
 }
@@ -499,8 +505,10 @@ void sensor_handler(void *pvParam)
     {
       /* Item added to queue succesfully */
       sensor_queue_send_led.toggle();
+      sensor_queue_state = true;
     }
     sensor_handler_led.toggle();
+    sensor_handler_state = true;
     /* Block the task */
     vTaskDelay(pdMS_TO_TICKS(SENSOR_HANDLER_BLOCK_TIME));
   }
@@ -520,7 +528,18 @@ void motor_controller(void *pvParam)
   while (1)
   {
     
+    motor_handler_state = true;
+    vTaskDelay(pdMS_TO_TICKS(500));
   }
+}
+
+/* Timer to reset flags */
+void flag_reset(TimerHandle_t xTimer){
+  /* Reset flags */
+    serial_handler_state = false;
+    sensor_handler_state = false;
+    motor_handler_state = false;
+    sensor_queue_state = false;
 }
 
 int main(void)
@@ -539,6 +558,13 @@ int main(void)
    */
   NVIC_SetPriority(ADC_IRQn, 0x06);
   NVIC_EnableIRQ(ADC_IRQn);
+
+  /* Create flag reset timer */
+  flag_reset_timer = xTimerCreate("Timer to reset flags",
+                                    pdMS_TO_TICKS(2000),
+                                    pdTRUE,
+                                    (void*)0,
+                                    flag_reset);
 
   /**
    * Create queue to hold accelerometer angle values
