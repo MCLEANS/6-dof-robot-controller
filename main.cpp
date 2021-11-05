@@ -182,7 +182,7 @@ void tostring(char str[], int num)
 }
 
 void debug_console_handler(void *pvParam){
-
+  debug_console.initialize();
   while(1){
 
   }
