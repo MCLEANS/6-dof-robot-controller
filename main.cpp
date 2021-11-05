@@ -100,7 +100,7 @@ custom_libraries::MG996R base_servo1(TIM4,
  * External Interrupt instances
  */
 custom_libraries::edge response_edge = custom_libraries::RISING;
-custom_libraries::_EXTI button(DEBUG_BUTTON_PORT,DEBUG_BUTTON_PIN,response_edge);
+custom_libraries::_EXTI debug_button(DEBUG_BUTTON_PORT,DEBUG_BUTTON_PIN,response_edge);
 
 /**
  * System clock configuration
@@ -179,6 +179,17 @@ extern "C" void ADC_IRQHandler(void){
   }
 }
 
+/**
+ * Debug button interrupt handler
+ */
+//TO-DO : This is not the exact interrupt pin, to be modified accrodingly
+extern "C" void EXTI3_IRQHandler(void){
+  if(EXTI->PR & EXTI_PR_PR3){
+    /* Do something here */
+		EXTI->PR |= EXTI_PR_PR3;
+	}
+}
+
 /* Convert an Integer value to a character array */
 void tostring(char str[], int num)
 {
@@ -201,6 +212,11 @@ void tostring(char str[], int num)
 
 /* Debug serial console */
 void debug_console_handler(void *pvParam){
+  /* Initialize debug button */
+  debug_button.initialize();
+  /* Enable interrupts for debug button */
+  NVIC_SetPriority(EXTI3_IRQn,0x07);
+  NVIC_EnableIRQ(EXTI3_IRQn);
 
   char base_servo_angle[4];
   char shoulder_servo_angle[4];
