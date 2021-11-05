@@ -13,6 +13,7 @@
 #include <USART.h>
 #include <GPIO.h>
 #include <ADC.h>
+#include <EXTI.h>
 #include "console.h"
 
 /**
@@ -193,7 +194,7 @@ void debug_console_handler(void *pvParam){
   char shoulder_servo_angle[4];
   char elbow_servo_angle[4];
   char wrist_servo_angle[4];
-  
+
   /* Initialize the degug console */
   debug_console.initialize();
   while(1){
