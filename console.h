@@ -9,13 +9,17 @@
 bool serial_handler_state = false;
 bool sensor_handler_state = false;
 bool motor_handler_state = false;
+bool sensor_queue_state = false;
 
 /* STRING LITERALS */
+char STR_EMPTY[] = " ";
 char STR_SOFTWARE_VERSION[] = "SOFTWARE_VERSION : ";
 char STR_SENSOR_HANDLER[] = "SENSOR HANDLER : ";
 char STR_SERIAL_HANDLER[] = "SERIAL HANDLER : ";
-char STR_MOTOR_STATE[] = "MOTOR HANDLER : ";
+char STR_MOTOR_HANDLER[] = "MOTOR HANDLER : ";
 char STR_SENSOR_QUEUE[] = "SENSOR QUEUE : ";
+char STR_OK[] = "OK";
+char STR_ERROR[] = "ERROR";
 char STR_MOTOR_POSITION[] = "***MOTOR POSITION ***";
 char STR_BASE_SERVO[] = "BASE SERVO : ";
 char STR_SHOULDER_SERVO[] = "SHOULDER SERVO : ";

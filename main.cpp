@@ -181,9 +181,38 @@ void tostring(char str[], int num)
   str[len] = '\0'; //null to end the string[max]
 }
 
+/* Debug serial console */
 void debug_console_handler(void *pvParam){
+  /* Initialize the degug console */
   debug_console.initialize();
   while(1){
+    /* Title */
+    debug_console.println(PROJECT_NAME);
+    debug_console.print(STR_SOFTWARE_VERSION);
+    debug_console.println(SOFTWARE_VERSION);
+
+    /* Flags */
+    debug_console.println(STR_EMPTY);
+    debug_console.println(STR_EMPTY);
+    debug_console.print(STR_SENSOR_HANDLER);
+    if(sensor_handler_state) debug_console.println(STR_OK);
+    else debug_console.println(STR_ERROR);
+    debug_console.print(STR_SERIAL_HANDLER);
+    if(serial_handler_state) debug_console.println(STR_OK);
+    else debug_console.println(STR_ERROR);
+    debug_console.print(STR_MOTOR_HANDLER);
+    if(motor_handler_state) debug_console.println(STR_OK);
+    else debug_console.println(STR_ERROR);
+    debug_console.println(STR_SENSOR_QUEUE);
+    if (sensor_queue_state) debug_console.println(STR_OK);
+    else debug_console.println(STR_ERROR);
+
+    /* Motor Position */
+    debug_console.println(STR_EMPTY);
+    debug_console.println(STR_EMPTY);
+    debug_console.println(STR_MOTOR_POSITION);
+    debug_console.println(STR_BASE_SERVO);
+    
 
   }
 }
