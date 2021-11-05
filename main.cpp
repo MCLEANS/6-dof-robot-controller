@@ -34,6 +34,12 @@
 #define ZERO_VALUE "0"
 
 /**
+ * SYSTEM BUTTONS
+ */
+#define DEBUG_BUTTON_PORT GPIOA
+#define DEBUG_BUTTON_PIN 0
+
+/**
  * Hardware timer constants
  */
 #define PSC_VALUE 640
@@ -90,7 +96,11 @@ custom_libraries::MG996R base_servo1(TIM4,
 
 /********************************************************************/
 
-
+/**
+ * External Interrupt instances
+ */
+custom_libraries::edge response_edge = custom_libraries::RISING;
+custom_libraries::_EXTI button(DEBUG_BUTTON_PORT,DEBUG_BUTTON_PIN,response_edge);
 
 /**
  * System clock configuration
@@ -117,6 +127,8 @@ custom_libraries::USART gateway_serial(USART2, GPIOA, 3, 2, 9600);
  * Serial degug console
  */
 custom_libraries::USART debug_console(USART1, GPIOA, 10, 9, 9600);
+#define DEBUG(message) (debug_console.print(message)) 
+#define DEBUG_LN(message) (debug_console.println(message)) 
 
 /**
  * Create LED objects
@@ -199,25 +211,25 @@ void debug_console_handler(void *pvParam){
   debug_console.initialize();
   while(1){
     /* Title */
-    debug_console.println(PROJECT_NAME);
-    debug_console.print(STR_SOFTWARE_VERSION);
-    debug_console.println(SOFTWARE_VERSION);
+    DEBUG_LN(PROJECT_NAME);
+    DEBUG(STR_SOFTWARE_VERSION);
+    DEBUG_LN(SOFTWARE_VERSION);
 
     /* Flags */
-    debug_console.println(STR_EMPTY);
-    debug_console.println(STR_EMPTY);
-    debug_console.print(STR_SENSOR_HANDLER);
-    if(sensor_handler_state) debug_console.println(STR_OK);
-    else debug_console.println(STR_ERROR);
-    debug_console.print(STR_SERIAL_HANDLER);
-    if(serial_handler_state) debug_console.println(STR_OK);
-    else debug_console.println(STR_ERROR);
-    debug_console.print(STR_MOTOR_HANDLER);
-    if(motor_handler_state) debug_console.println(STR_OK);
-    else debug_console.println(STR_ERROR);
-    debug_console.println(STR_SENSOR_QUEUE);
-    if (sensor_queue_state) debug_console.println(STR_OK);
-    else debug_console.println(STR_ERROR);
+    DEBUG_LN(STR_EMPTY);
+    DEBUG_LN(STR_EMPTY);
+    DEBUG(STR_SENSOR_HANDLER);
+    if(sensor_handler_state) DEBUG_LN(STR_OK);
+    else DEBUG_LN(STR_ERROR);
+    DEBUG(STR_SERIAL_HANDLER);
+    if(serial_handler_state) DEBUG_LN(STR_OK);
+    else DEBUG_LN(STR_ERROR);
+    DEBUG(STR_MOTOR_HANDLER);
+    if(motor_handler_state) DEBUG_LN(STR_OK);
+    else DEBUG_LN(STR_ERROR);
+    DEBUG(STR_SENSOR_QUEUE);
+    if (sensor_queue_state) DEBUG_LN(STR_OK);
+    else DEBUG_LN(STR_ERROR);
 
     /* Motor Position */
     //convert integer angle to strings
@@ -226,19 +238,19 @@ void debug_console_handler(void *pvParam){
     tostring(elbow_servo_angle,elbow_servo.get_current_angle());
     tostring(wrist_servo_angle,wrist_servo.get_current_angle());
 
-    debug_console.println(STR_EMPTY);
-    debug_console.println(STR_EMPTY);
-    debug_console.println(STR_MOTOR_POSITION);
-    debug_console.print(STR_BASE_SERVO);
-    debug_console.println(base_servo_angle);
-    debug_console.print(STR_SHOULDER_SERVO);
-    debug_console.println(shoulder_servo_angle);
-    debug_console.print(STR_ELBOW_SERVO);
-    debug_console.println(elbow_servo_angle);
-    debug_console.print(STR_WRIST_SERVO);
-    debug_console.println(wrist_servo_angle);
-    debug_console.println(STR_EMPTY);
-    debug_console.println(STR_EMPTY);
+    DEBUG_LN(STR_EMPTY);
+    DEBUG_LN(STR_EMPTY);
+    DEBUG_LN(STR_MOTOR_POSITION);
+    DEBUG(STR_BASE_SERVO);
+    DEBUG_LN(base_servo_angle);
+    DEBUG(STR_SHOULDER_SERVO);
+    DEBUG_LN(shoulder_servo_angle);
+    DEBUG(STR_ELBOW_SERVO);
+    DEBUG_LN(elbow_servo_angle);
+    DEBUG(STR_WRIST_SERVO);
+    DEBUG_LN(wrist_servo_angle);
+    DEBUG_LN(STR_EMPTY);
+    DEBUG_LN(STR_EMPTY);
 
     vTaskDelay(pdMS_TO_TICKS(2000));
   }
