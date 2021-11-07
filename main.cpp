@@ -36,8 +36,15 @@
 /**
  * SYSTEM BUTTONS
  */
-#define DEBUG_BUTTON_PORT GPIOA
+#define DEBUG_BUTTON_PORT GPIOE
 #define DEBUG_BUTTON_PIN 0
+
+/**
+ * Debug Port
+ */
+#define DEBUG_PORT GPIOA
+#define DEBUG_PORT_RX 10
+#define DEBUG_PORT_TX 9
 
 /**
  * Hardware timer constants
@@ -126,7 +133,7 @@ custom_libraries::USART gateway_serial(USART2, GPIOA, 3, 2, 9600);
 /**
  * Serial degug console
  */
-custom_libraries::USART debug_console(USART1, GPIOA, 10, 9, 9600);
+custom_libraries::USART debug_console(USART1, DEBUG_PORT, DEBUG_PORT_RX, DEBUG_PORT_TX, 9600);
 #define DEBUG(message) (debug_console.print(message)) 
 #define DEBUG_LN(message) (debug_console.println(message)) 
 
@@ -183,10 +190,10 @@ extern "C" void ADC_IRQHandler(void){
  * Debug button interrupt handler
  */
 //TO-DO : This is not the exact interrupt pin, to be modified accrodingly
-extern "C" void EXTI3_IRQHandler(void){
-  if(EXTI->PR & EXTI_PR_PR3){
+extern "C" void EXTI0_IRQHandler(void){
+  if(EXTI->PR & EXTI_PR_PR0){
     /* Do something here */
-		EXTI->PR |= EXTI_PR_PR3;
+		EXTI->PR |= EXTI_PR_PR0;
 	}
 }
 
@@ -215,8 +222,8 @@ void debug_console_handler(void *pvParam){
   /* Initialize debug button */
   debug_button.initialize();
   /* Enable interrupts for debug button */
-  NVIC_SetPriority(EXTI3_IRQn,0x07);
-  NVIC_EnableIRQ(EXTI3_IRQn);
+  NVIC_SetPriority(EXTI0_IRQn,0x07);
+  NVIC_EnableIRQ(EXTI0_IRQn);
 
   char base_servo_angle[4];
   char shoulder_servo_angle[4];
