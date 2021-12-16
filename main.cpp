@@ -6,6 +6,7 @@
 
 #include <queue.h>
 #include <timers.h>
+#include <semphr.h>
 #include <string.h>
 
 #include <MG996R.h>
@@ -42,9 +43,9 @@
 /**
  * Debug Port
  */
-#define DEBUG_PORT GPIOA
-#define DEBUG_PORT_RX 10
-#define DEBUG_PORT_TX 9
+#define DEBUG_PORT GPIOB
+#define DEBUG_PORT_RX 7
+#define DEBUG_PORT_TX 6
 
 /**
  * Hardware timer constants
@@ -106,7 +107,7 @@ custom_libraries::MG996R base_servo1(TIM4,
 /**
  * External Interrupt instances
  */
-custom_libraries::edge response_edge = custom_libraries::RISING;
+custom_libraries::edge response_edge = custom_libraries::FALLING;
 custom_libraries::_EXTI debug_button(DEBUG_BUTTON_PORT,DEBUG_BUTTON_PIN,response_edge);
 
 /**
@@ -176,6 +177,11 @@ QueueHandle_t sensor_queue;
 TimerHandle_t flag_reset_timer;
 
 /**
+ * Semaphore handles
+ */
+SemaphoreHandle_t debug_handler;
+
+/**
  * ADC interrupts handler
  */
 extern "C" void ADC_IRQHandler(void){
@@ -191,10 +197,18 @@ extern "C" void ADC_IRQHandler(void){
  */
 //TO-DO : This is not the exact interrupt pin, to be modified accrodingly
 extern "C" void EXTI0_IRQHandler(void){
+  static BaseType_t xHigherPriorityTaskWoken;
+  xHigherPriorityTaskWoken = pdFALSE;
+
   if(EXTI->PR & EXTI_PR_PR0){
     /* Do something here */
-		EXTI->PR |= EXTI_PR_PR0;
+    EXTI->PR |= EXTI_PR_PR0;
+    xSemaphoreGiveFromISR(debug_handler, &xHigherPriorityTaskWoken);
 	}
+  if(xHigherPriorityTaskWoken == pdTRUE){
+    /* Yield here */
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+  }
 }
 
 /* Convert an Integer value to a character array */
@@ -233,49 +247,58 @@ void debug_console_handler(void *pvParam){
   /* Initialize the degug console */
   debug_console.initialize();
   while(1){
-    /* Title */
-    DEBUG_LN(PROJECT_NAME);
-    DEBUG(STR_SOFTWARE_VERSION);
-    DEBUG_LN(SOFTWARE_VERSION);
 
-    /* Flags */
-    DEBUG_LN(STR_EMPTY);
-    DEBUG_LN(STR_EMPTY);
-    DEBUG(STR_SENSOR_HANDLER);
-    if(sensor_handler_state) DEBUG_LN(STR_OK);
-    else DEBUG_LN(STR_ERROR);
-    DEBUG(STR_SERIAL_HANDLER);
-    if(serial_handler_state) DEBUG_LN(STR_OK);
-    else DEBUG_LN(STR_ERROR);
-    DEBUG(STR_MOTOR_HANDLER);
-    if(motor_handler_state) DEBUG_LN(STR_OK);
-    else DEBUG_LN(STR_ERROR);
-    DEBUG(STR_SENSOR_QUEUE);
-    if (sensor_queue_state) DEBUG_LN(STR_OK);
-    else DEBUG_LN(STR_ERROR);
+    if( xSemaphoreTake( debug_handler, portMAX_DELAY ) == pdTRUE ){
+      /* Title */
+      DEBUG_LN(STR_lOGO_1);
+      DEBUG_LN(STR_lOGO_2);
+      DEBUG_LN(STR_lOGO_3);
+      DEBUG_LN(STR_lOGO_4);
+      DEBUG_LN(STR_lOGO_5);
+      DEBUG_LN(STR_lOGO_6);
+      DEBUG_LN(STR_lOGO_7);
+      DEBUG_LN(STR_EMPTY);
+      DEBUG_LN(STR_PARTITION);
+      DEBUG_LN(STR_EMPTY);
+      DEBUG_LN(PROJECT_NAME);
+      DEBUG(STR_SOFTWARE_VERSION);
+      DEBUG_LN(SOFTWARE_VERSION);
 
-    /* Motor Position */
-    //convert integer angle to strings
-    tostring(base_servo_angle,base_servo.get_current_angle());
-    tostring(shoulder_servo_angle,shoulder_servo.get_current_angle());
-    tostring(elbow_servo_angle,elbow_servo.get_current_angle());
-    tostring(wrist_servo_angle,wrist_servo.get_current_angle());
+      /* Flags */
+      DEBUG_LN(STR_EMPTY);
+      DEBUG(STR_SENSOR_HANDLER);
+      if(sensor_handler_state) DEBUG_LN(STR_OK);
+      else DEBUG_LN(STR_ERROR);
+      DEBUG(STR_SERIAL_HANDLER);
+      if(serial_handler_state) DEBUG_LN(STR_OK);
+      else DEBUG_LN(STR_ERROR);
+      DEBUG(STR_MOTOR_HANDLER);
+      if(motor_handler_state) DEBUG_LN(STR_OK);
+      else DEBUG_LN(STR_ERROR);
+      DEBUG(STR_SENSOR_QUEUE);
+      if (sensor_queue_state) DEBUG_LN(STR_OK);
+      else DEBUG_LN(STR_ERROR);
 
-    DEBUG_LN(STR_EMPTY);
-    DEBUG_LN(STR_EMPTY);
-    DEBUG_LN(STR_MOTOR_POSITION);
-    DEBUG(STR_BASE_SERVO);
-    DEBUG_LN(base_servo_angle);
-    DEBUG(STR_SHOULDER_SERVO);
-    DEBUG_LN(shoulder_servo_angle);
-    DEBUG(STR_ELBOW_SERVO);
-    DEBUG_LN(elbow_servo_angle);
-    DEBUG(STR_WRIST_SERVO);
-    DEBUG_LN(wrist_servo_angle);
-    DEBUG_LN(STR_EMPTY);
-    DEBUG_LN(STR_EMPTY);
+      /* Motor Position */
+      //convert integer angle to strings
+      tostring(base_servo_angle,base_servo.get_current_angle());
+      tostring(shoulder_servo_angle,shoulder_servo.get_current_angle());
+      tostring(elbow_servo_angle,elbow_servo.get_current_angle());
+      tostring(wrist_servo_angle,wrist_servo.get_current_angle());
 
-    vTaskDelay(pdMS_TO_TICKS(2000));
+      DEBUG_LN(STR_EMPTY);
+      DEBUG_LN(STR_MOTOR_POSITION);
+      DEBUG(STR_BASE_SERVO);
+      DEBUG_LN(base_servo_angle);
+      DEBUG(STR_SHOULDER_SERVO);
+      DEBUG_LN(shoulder_servo_angle);
+      DEBUG(STR_ELBOW_SERVO);
+      DEBUG_LN(elbow_servo_angle);
+      DEBUG(STR_WRIST_SERVO);
+      DEBUG_LN(wrist_servo_angle);
+      DEBUG_LN(STR_EMPTY);
+      DEBUG_LN(STR_PARTITION);
+    }
   }
 }
 
@@ -586,6 +609,7 @@ void motor_controller(void *pvParam)
   {
     
     motor_handler_state = true;
+    wrist_servo.move_to_angle(20);
     vTaskDelay(pdMS_TO_TICKS(500));
   }
 }
@@ -627,6 +651,18 @@ int main(void)
    * Create queue to hold accelerometer angle values
    */
   sensor_queue = xQueueCreate(10, sizeof(Sensor_values));
+
+  /**
+   * Create semaphore to handle debug console
+   */
+  debug_handler = xSemaphoreCreateBinary();
+  if(debug_handler == NULL){
+    /* There wasn't enough space to create semaphore */
+    /* Error handling here */
+  }
+  else{
+    /* Semaphore created sucessfully */
+  }
 
   /* create system tasks */
   xTaskCreate(motor_controller,
