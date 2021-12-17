@@ -47,11 +47,6 @@
 #define DEBUG_PORT_RX 7
 #define DEBUG_PORT_TX 6
 
-/**
- * Hardware timer constants
- */
-#define PSC_VALUE 640
-#define ARR_VALUE 62000
 
 /* variable to hold ADC value */
 uint16_t raw_vibration_value = 0;
