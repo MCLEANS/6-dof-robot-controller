@@ -89,7 +89,7 @@ custom_libraries::MG996R wrist_servo(TIM3,
 custom_libraries::MG996R wrist_servo1(TIM4,
                                      custom_libraries::channel3,
                                      GPIOB,
-                                     8,
+                                     10,
                                      custom_libraries::AF2);
 custom_libraries::MG996R base_servo1(TIM4,
                                     custom_libraries::channel4,
