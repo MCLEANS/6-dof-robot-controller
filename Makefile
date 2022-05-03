@@ -27,7 +27,6 @@ CXX_OBJS += EXTI.o
 
 
 #C SOURCE FILES
-#SOURCES  = main.c
 SOURCES  += ./dependencies/system_stm32f4xx.c
 #SOURCES += ./dependencies/stm32f4xx_it.c
 SOURCES += ./startup/startup_stm32f40_41xxx.s
