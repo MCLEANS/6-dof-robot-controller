@@ -13,6 +13,7 @@ CXX_SOURCES += ADC/ADC.cpp
 CXX_SOURCES += TIMER/Timerconfiguration.cpp
 CXX_SOURCES += EXTI/EXTI.cpp 
 
+#CXX OBJECT_FILES
 CXX_OBJS += main.o
 CXX_OBJS += clockconfig.o
 CXX_OBJS += PWM.o 
@@ -24,7 +25,6 @@ CXX_OBJS += GPIO.o
 CXX_OBJS += ADC.o
 CXX_OBJS += Timerconfiguration.o
 CXX_OBJS += EXTI.o
-
 
 #C SOURCE FILES
 SOURCES  += ./dependencies/system_stm32f4xx.c
@@ -41,6 +41,7 @@ SOURCES += ./FreeRTOS/Source/timers.c
 SOURCES += ./FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
 SOURCES += ./FreeRTOS/Source/portable/MemMang/heap_4.c
 
+#C OBJECT_FILES
 CC_OBJS += system_stm32f4xx.o
 #CC_OBJS += stm32f4xx_it.o
 CC_OBJS += startup_stm32f40_41xxx.o
@@ -53,8 +54,6 @@ CC_OBJS += tasks.o
 CC_OBJS += timers.o
 CC_OBJS += port.o
 CC_OBJS += heap_4.o
-
-
 
 # name for output binary files
 PROJECT = main
