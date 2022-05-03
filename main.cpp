@@ -563,16 +563,12 @@ void sensor_handler(void *pvParam)
   sensor_queue_send_led.output_settings(custom_libraries::PUSH_PULL, custom_libraries::VERY_HIGH);
   /* Initialize the motion sensor */
   accel_sensor.initialize();
-  /* Structure to hold accel angle values */
-  custom_libraries::Angle_values angle_values;
   /* Struct to hold sensor_data */
   Sensor_values sensor_values;
   while (1)
   {
-    /* Get accelerometer angle values */
-    angle_values = accel_sensor.read_angles();
     /* Store accel values */
-    sensor_values.angle_values = angle_values;
+    sensor_values.angle_values = accel_sensor.read_angles();
     /* Obtain vibration sensor ADC value */
     sensor_values.vibration_value = raw_vibration_value;
     /* Check if item was sucessfully added to queue */
@@ -581,6 +577,10 @@ void sensor_handler(void *pvParam)
       /* Item added to queue succesfully */
       sensor_queue_send_led.toggle();
       sensor_queue_state = true;
+    }
+    else{
+      /* Item could not be added to the queue, handle error */
+      sensor_queue_state = false;
     }
     sensor_handler_led.toggle();
     sensor_handler_state = true;
