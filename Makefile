@@ -2,16 +2,16 @@
 # list of source files
 #CXX SOURCE_FILES
 CXX_SOURCES += main.cpp
-CXX_SOURCES += clockconfig.cpp
-CXX_SOURCES += PWM.cpp
-CXX_SOURCES += MG996R.cpp
-CXX_SOURCES += SPI_16bit.cpp 
-CXX_SOURCES += LIS3DH.cpp 
-CXX_SOURCES += USART.cpp
-CXX_SOURCES += GPIO.cpp
-CXX_SOURCES += ADC.cpp
-CXX_SOURCES += Timerconfiguration.cpp
-CXX_SOURCES += EXTI.cpp 
+CXX_SOURCES += SYS_CLOCK/clockconfig.cpp
+CXX_SOURCES += SERVO/PWM.cpp
+CXX_SOURCES += SERVO/MG996R.cpp
+CXX_SOURCES += LIS3DH/SPI_16bit.cpp 
+CXX_SOURCES += LIS3DH/LIS3DH.cpp 
+CXX_SOURCES += USART/USART.cpp
+CXX_SOURCES += GPIO/GPIO.cpp
+CXX_SOURCES += ADC/ADC.cpp
+CXX_SOURCES += TIMER/Timerconfiguration.cpp
+CXX_SOURCES += EXTI/EXTI.cpp 
 
 CXX_OBJS += main.o
 CXX_OBJS += clockconfig.o
@@ -78,6 +78,14 @@ CFLAGS += -I ./Includes
 CFLAGS += -I .
 CFLAGS += -I ./FreeRTOS/Source/portable/GCC/ARM_CM4F
 CFLAGS += -I ./FreeRTOS/Source/include/
+CFLAGS += -I ./EXTI 
+CFLAGS += -I ./TIMER
+CFLAGS += -I ./LIS3DH
+CFLAGS += -I ./GPIO
+CFLAGS += -I ./SERVO
+CFLAGS += -I ./SYS_CLOCK
+CFLAGS += -I ./USART 
+CFLAGS += -I ./ADC
 
 LD_FLAGS = -mlittle-endian -mthumb
 LD_FLAGS += -DSTM32F40_41xxx -T  STM32F417IG_FLASH.ld
