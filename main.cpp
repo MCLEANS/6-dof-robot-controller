@@ -1,52 +1,4 @@
-#include "stm32f4xx.h"
-#include "clockconfig.h"
-#include <FreeRTOS.h>
-#include <task.h>
-#include <portmacro.h>
-
-#include <queue.h>
-#include <timers.h>
-#include <semphr.h>
-#include <string.h>
-
-#include <MG996R.h>
-#include <LIS3DH.h>
-#include <USART.h>
-#include <GPIO.h>
-#include <ADC.h>
-#include <EXTI.h>
-#include "console.h"
-
-/**
- * RTOS constants
- */
-#define SERIAL_HANDLER_BLOCK_TIME 100
-#define SENSOR_HANDLER_BLOCK_TIME 50
-
-/**
- * LIS3DH sensor Pin Mapping
- */
-#define SCK_PIN 5
-#define MOSI_PIN 7
-#define MISO_PIN 6
-#define CS_PORT GPIOE
-#define CS_PIN 3
-
-#define ZERO_VALUE "0"
-
-/**
- * SYSTEM BUTTONS
- */
-#define DEBUG_BUTTON_PORT GPIOE
-#define DEBUG_BUTTON_PIN 0
-
-/**
- * Debug Port
- */
-#define DEBUG_PORT GPIOB
-#define DEBUG_PORT_RX 7
-#define DEBUG_PORT_TX 6
-
+#include "main.h"
 
 /* variable to hold ADC value */
 uint16_t raw_vibration_value = 0;
@@ -57,128 +9,22 @@ struct Sensor_values{
   int vibration_value;
 };
 
-/**
- * Servo motor objects
- */
-
-custom_libraries::MG996R base_servo(TIM4,
-                                    custom_libraries::channel1,
-                                    GPIOB,
-                                    6,
-                                    custom_libraries::AF2);
-
-custom_libraries::MG996R shoulder_servo(TIM4,
-                                        custom_libraries::channel2,
-                                        GPIOB,
-                                        7,
-                                        custom_libraries::AF2);
-
-custom_libraries::MG996R elbow_servo(TIM3,
-                                     custom_libraries::channel3,
-                                     GPIOB,
-                                     0,
-                                     custom_libraries::AF2);     
-
-custom_libraries::MG996R wrist_servo(TIM3,
-                                     custom_libraries::channel4,
-                                     GPIOB,
-                                     1,
-                                     custom_libraries::AF2);                                  
-
-/********************************************************************/
-custom_libraries::MG996R wrist_servo1(TIM4,
-                                     custom_libraries::channel3,
-                                     GPIOB,
-                                     10,
-                                     custom_libraries::AF2);
-custom_libraries::MG996R base_servo1(TIM4,
-                                    custom_libraries::channel4,
-                                    GPIOB,
-                                    9,
-                                    custom_libraries::AF2);
-
-/********************************************************************/
-
-/**
- * External Interrupt instances
- */
-custom_libraries::edge response_edge = custom_libraries::FALLING;
-custom_libraries::_EXTI debug_button(DEBUG_BUTTON_PORT,DEBUG_BUTTON_PIN,response_edge);
-
-/**
- * System clock configuration
- */
-custom_libraries::clock_config system_clock;
-
-/**
- * Accelerometer object
- */
-custom_libraries::LIS3DH accel_sensor(SPI1,
-                                      GPIOA,
-                                      SCK_PIN,
-                                      MOSI_PIN,
-                                      MISO_PIN,
-                                      CS_PORT,
-                                      CS_PIN);
-
-/**
- * Serial port to send data to gateway
- */
-custom_libraries::USART gateway_serial(USART2, GPIOA, 3, 2, 9600);
-
-/**
- * Serial degug console
- */
-custom_libraries::USART debug_console(USART1, DEBUG_PORT, DEBUG_PORT_RX, DEBUG_PORT_TX, 9600);
-#define DEBUG(message) (debug_console.print(message)) 
-#define DEBUG_LN(message) (debug_console.println(message)) 
-
-/**
- * Create LED objects
- */
-custom_libraries::_GPIO green_led(GPIOD, 12);
-custom_libraries::_GPIO orange_led(GPIOD, 13);
-custom_libraries::_GPIO red_led(GPIOD, 14);
-custom_libraries::_GPIO blue_led(GPIOD, 15);
-
-custom_libraries::_GPIO motor_control_led(GPIOD, 0);
-custom_libraries::_GPIO sensor_handler_led(GPIOD, 1);
-custom_libraries::_GPIO gateway_handler_led(GPIOD, 2);
-custom_libraries::_GPIO sensor_queue_send_led(GPIOD, 4);
-custom_libraries::_GPIO sensor_queue_receive_led(GPIOD, 6);
-
-/**
- * Create vibration sensor object
- */
-custom_libraries::_ADC vibration_sensor(ADC1, GPIOA, 4, custom_libraries::ch4, custom_libraries::SLOW);
-
-
-/**
- * Task handles
- */
+/* SYSTEM TASK HANDLES */
 TaskHandle_t motor_control_task;
 TaskHandle_t sensor_handler_task;
 TaskHandle_t gateway_serial_handler_task;
 TaskHandle_t debug_console_handler_task;
 
-/**
- * Queue handles
- */
+/* QUEUE HANDLES */
 QueueHandle_t sensor_queue;
 
-/**
- * Timer handles
- */
+/* TIMER HANDLES */
 TimerHandle_t flag_reset_timer;
 
-/**
- * Semaphore handles
- */
+/* SEMAPHORE HANDLES */
 SemaphoreHandle_t debug_handler;
 
-/**
- * ADC interrupts handler
- */
+/* ACCELEROMETER INTERRUPT HANDLER */
 extern "C" void ADC_IRQHandler(void){
   if (ADC1->SR & ADC_SR_EOC){
     ADC1->SR &= ~ADC_SR_EOC;
@@ -657,6 +503,7 @@ int main(void)
   }
   else{
     /* Semaphore created sucessfully */
+    xSemaphoreGive(debug_handler);
   }
 
   /* create system tasks */
