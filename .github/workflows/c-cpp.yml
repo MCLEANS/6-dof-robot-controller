@@ -1,0 +1,28 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install Dependencies
+      run: sudo apt install gcc-arm-none-eabi make
+      
+    - name: Compile Code
+      run: make
+      
+    - name: Save Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build_binary
+        path: release/main.bin
+        
