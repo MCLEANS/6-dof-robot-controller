@@ -23,6 +23,6 @@ jobs:
     - name: Save Build Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: build_binary
-        path: main.bin
+        name: release_binary
+        path: build/main.bin
         
