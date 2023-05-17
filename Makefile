@@ -99,14 +99,15 @@ all: $(PROJECT).elf
 $(PROJECT).elf: $(CXX_SOURCES)
 	$(CC) $(CFLAGS) $(SOURCES) 
 	$(CXX) $(CFLAGS) $(CXX_SOURCES) 
-	$(CXX) $(LD_FLAGS) $(CC_OBJS) $(CXX_OBJS) -o $@ 
-	$(OBJCOPY) -O ihex $(PROJECT).elf $(PROJECT).hex
-	$(OBJCOPY) -O binary $(PROJECT).elf $(PROJECT).bin
+	mkdir -p build
+	$(CXX) $(LD_FLAGS) $(CC_OBJS) $(CXX_OBJS) -o build/$@ 
+	$(OBJCOPY) -O ihex build/$(PROJECT).elf build/$(PROJECT).hex
+	$(OBJCOPY) -O binary build/$(PROJECT).elf build/$(PROJECT).bin
 	rm -f *.o
 
 # remove binary files
 clean:
-	rm -f *.o *.elf *.hex *.bin
+	rm -f *.o *.elf *.hex *.bin build/*
 
 # flash
 flash:

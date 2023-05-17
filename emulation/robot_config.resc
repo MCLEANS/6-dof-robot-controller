@@ -9,7 +9,7 @@ machine LoadPlatformDescription @platforms/boards/stm32f4_discovery-kit.repl
 cpu PerformanceInMips 125
 
 : ADAPT PATH HERE!
-$bin?=@../main.elf
+$bin?=@../build/main.elf
 
 : adapted to UART2
 showAnalyzer sysbus.usart1
