@@ -99,8 +99,7 @@ all: $(PROJECT).elf
 $(PROJECT).elf: $(CXX_SOURCES)
 	$(CC) $(CFLAGS) $(SOURCES) 
 	$(CXX) $(CFLAGS) $(CXX_SOURCES) 
-	rm -r build
-	mkdir build
+	mkdir -p build
 	$(CXX) $(LD_FLAGS) $(CC_OBJS) $(CXX_OBJS) -o build/$@ 
 	$(OBJCOPY) -O ihex build/$(PROJECT).elf build/$(PROJECT).hex
 	$(OBJCOPY) -O binary build/$(PROJECT).elf build/$(PROJECT).bin
