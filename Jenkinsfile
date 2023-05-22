@@ -3,7 +3,7 @@ pipeline{
     stages{
         stage('Configure'){
             steps{
-                sh 'echo "Configuring Build Environment'
+                sh 'echo "Configuring Build Environment"'
                 sh 'apt install gcc-arm-none-eabi make st-tools'
             }
         }
