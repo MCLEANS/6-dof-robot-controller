@@ -4,7 +4,7 @@ pipeline{
         stage('Configure'){
             steps{
                 sh 'echo "Configuring Build Environment"'
-                sh 'echo "agwaya234" | sudo -S apt install gcc-arm-none-eabi make st-tools'
+                sh 'sudo apt install gcc-arm-none-eabi make st-tools'
             }
         }
 
