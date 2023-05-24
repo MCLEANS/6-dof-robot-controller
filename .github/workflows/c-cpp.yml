@@ -17,7 +17,7 @@ jobs:
     - name: Install Dependencies
       run: sudo apt install gcc-arm-none-eabi make
       
-    - name: Compile Code
+    - name: Compile
       run: make
       
     - name: Save Build Artifacts
