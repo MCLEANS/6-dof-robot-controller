@@ -449,9 +449,9 @@ void motor_controller(void *pvParam)
   while (1)
   {
     
-    motor_handler_state = true;
-    wrist_servo.move_to_angle(20);
+    base_servo.move_to_angle(120);
     vTaskDelay(pdMS_TO_TICKS(500));
+
   }
 }
 

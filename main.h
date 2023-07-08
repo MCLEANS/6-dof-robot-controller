@@ -44,19 +44,19 @@
 #define DEBUG_BUTTON_PIN 0
 
 /* DEBUG PORT PIN MAPPING */
-#define DEBUG_PORT GPIOB
-#define DEBUG_PORT_RX 7
-#define DEBUG_PORT_TX 6
+#define DEBUG_PORT GPIOA
+#define DEBUG_PORT_RX 3
+#define DEBUG_PORT_TX 2
 
 /* SERVO MOTOR INSTANCES */
 custom_libraries::MG996R base_servo(TIM4, custom_libraries::channel1, GPIOB, 6, custom_libraries::AF2);
-custom_libraries::MG996R shoulder_servo(TIM4, custom_libraries::channel2, GPIOB, 7, custom_libraries::AF2);
+custom_libraries::MG996R shoulder_servo(TIM4, custom_libraries::channel2, GPIOB, 9, custom_libraries::AF2);
 custom_libraries::MG996R elbow_servo(TIM3, custom_libraries::channel3, GPIOB, 0, custom_libraries::AF2);     
 custom_libraries::MG996R wrist_servo(TIM3, custom_libraries::channel4, GPIOB, 1,custom_libraries::AF2);                                  
 
 /********************************************************************/
 custom_libraries::MG996R wrist_servo1(TIM4, custom_libraries::channel3, GPIOB, 10, custom_libraries::AF2);
-custom_libraries::MG996R base_servo1(TIM4,  custom_libraries::channel4, GPIOB,  9,  custom_libraries::AF2);
+custom_libraries::MG996R base_servo1(TIM4,  custom_libraries::channel4, GPIOB,  7,  custom_libraries::AF2);
 
 /********************************************************************/
 
@@ -71,10 +71,10 @@ custom_libraries::clock_config system_clock;
 custom_libraries::LIS3DH accel_sensor(SPI1, GPIOA, SCK_PIN, MOSI_PIN, MISO_PIN, CS_PORT, CS_PIN);
 
 /* GATEWAY SERIAL PORT */
-custom_libraries::USART gateway_serial(USART2, GPIOA, 3, 2, 9600);
+custom_libraries::USART gateway_serial(USART1, GPIOB, 7, 6, 9600);
 
 /* DEBUG CONSOLE */
-custom_libraries::USART debug_console(USART1, DEBUG_PORT, DEBUG_PORT_RX, DEBUG_PORT_TX, 9600);
+custom_libraries::USART debug_console(USART2, DEBUG_PORT, DEBUG_PORT_RX, DEBUG_PORT_TX, 9600);
 #define DEBUG(message) (debug_console.print(message)) 
 #define DEBUG_LN(message) (debug_console.println(message)) 
 

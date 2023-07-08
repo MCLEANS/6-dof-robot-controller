@@ -89,7 +89,7 @@ CFLAGS += -I ./PERIPHERALS/PWM
 
 LD_FLAGS = -mlittle-endian -mthumb
 LD_FLAGS += -DSTM32F40_41xxx -T  STM32F417IG_FLASH.ld
-LD_FLAGS +=  -mfpu=fpv4-sp-d16  -specs=nosys.specs
+LD_FLAGS +=  -mfpu=fpv4-sp-d16 -specs=nano.specs -specs=nosys.specs
 LD_FLAGS += -Wl,--gc-sections
 
 
@@ -111,4 +111,4 @@ clean:
 
 # flash
 flash:
-	sudo $(ST_FLASH) write $(PROJECT).bin 0x8000000
+	sudo $(ST_FLASH) write build/$(PROJECT).bin 0x8000000
