@@ -1,4 +1,4 @@
-#include "main.h"
+#include "common.h"
 
 /* variable to hold ADC value */
 uint16_t raw_vibration_value = 0;
@@ -543,3 +543,6 @@ int main(void)
     
   }
 }
+
+
+ 

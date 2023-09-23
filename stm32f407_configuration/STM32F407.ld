@@ -3,7 +3,7 @@
 **
 **  File        : stm32_flash.ld
 **
-**  Abstract    : Linker script for STM32F417IG Device with
+**  Abstract    : Linker script for STM32F07 Device with
 **                1024KByte FLASH, 128KByte RAM
 **
 **                Set heap size, stack size and stack location according
@@ -15,7 +15,7 @@
 **
 **  Environment : Atollic TrueSTUDIO(R)
 **
-**  Distribution: The file is distributed “as is,” without any warranty
+**  Distribution: The file is distributed ï¿½as is,ï¿½ without any warranty
 **                of any kind.
 **
 **  (c)Copyright Atollic AB.

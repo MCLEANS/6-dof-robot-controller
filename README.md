@@ -7,13 +7,20 @@ The build requires the following:
 
 ## Usage
 `arm-none-eabi-gcc` and `arm-none-eabi-objcopy` should be in `${PATH}`, `${ST_FLASH}` contains a path to `st-flash`.
+
+## Build
+
+> generate build files
 ```
-# clean up
-make clean
+cmake -S . -B cmake_build/release
+```
 
-# compile and link the project
- make all
-
-# upload the code to stm32f4 (requires root privileges)
- make flash
+> build
+```
+cmake --build cmake_build/release
+```
+> upload the code to stm32f4 (requires root privileges)
+```
+st-flash write cmake_build/release/6dofRobotController.bin 0x8000000
+```
 
