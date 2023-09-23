@@ -21,7 +21,7 @@ jobs:
       run: mkdir cmake_build && mkdir cmake_build/release
 
     - name: Configure CMake
-      run: cmake cmake_build/release
+      run: cmake -S . -B cmake_build/release
 
     - name: Build
       run: cmake --build cmake_build/release
