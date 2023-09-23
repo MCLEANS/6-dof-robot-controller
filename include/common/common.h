@@ -1,5 +1,5 @@
-#ifndef _MAIN_H
-#define _MAIN_H
+#ifndef _COMMON_H
+#define _COMMON_H
 
 #include "stm32f4xx.h"
 
