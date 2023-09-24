@@ -51,7 +51,7 @@ set(FREERTOS_INCLUDE_FILES
     
 )
 
-set(EXECUTABLE ${PROJECT_NAME}.out)
+set(EXECUTABLE ${PROJECT_NAME}.elf)
 
 add_executable(${EXECUTABLE})
 
