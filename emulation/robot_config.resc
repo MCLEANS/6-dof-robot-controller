@@ -1,15 +1,15 @@
-:name: Novek
+:name: RobotController
 :description: This script runs Contiki on STM32F4 Discovery.
 
 using sysbus
-$name?="6-dof-home_robot"
+$name?="6-dof-robot-controller"
 mach create $name
 machine LoadPlatformDescription @platforms/boards/stm32f4_discovery-kit.repl
 
 cpu PerformanceInMips 125
 
 : ADAPT PATH HERE!
-$bin?=@../build/main.elf
+$bin?=@../cmake_build/release/6dofRobotController.elf
 
 : adapted to UART2
 showAnalyzer sysbus.usart1
