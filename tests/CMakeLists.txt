@@ -6,7 +6,19 @@ set(EXECUTABLE ${PROJECT_NAME})
 
 add_executable(${EXECUTABLE})
 
-add_subdirectory(Catch2)
+
+#Add Catch2 v2.x as a submodule
+include(FetchContent)
+
+FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG v2.x 
+    GIT_PROGRESS TRUE
+    GIT_SHALLOW TRUE
+    GIT_SHALLOW_DEPTH 1
+)
+FetchContent_MakeAvailable(Catch2)
 
 target_link_libraries(${EXECUTABLE} PRIVATE 
     Catch2::Catch2
