@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 3.15)
 
 project(6dofRobotControllerUnitTests)
 
+set(CATCH_INCLUDE_DIR Catch2/Include)
+
 set(EXECUTABLE ${PROJECT_NAME})
 
 add_executable(${EXECUTABLE})
-
 
 #Add Catch2 v2.x as a submodule
 include(FetchContent)
@@ -30,7 +31,7 @@ target_sources(${EXECUTABLE} PRIVATE
 )
 
 target_include_directories(${EXECUTABLE} PRIVATE
-    Catch2/single_include
+    ${CATCH_INCLUDE_DIR}
 )
 
 # Set the C++ standard (e.g., C++11 or C++14)
