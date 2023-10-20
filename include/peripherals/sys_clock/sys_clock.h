@@ -1,24 +1,24 @@
 /*
- * clockconfig.h
+ * sys_clock.h
  *
  *  Created on: Mar 30, 2020
  *      Author: MCLEANS
  */
 
-#ifndef CLOCKCONFIG_H_
-#define CLOCKCONFIG_H_
+#ifndef SYS_CLOCK_H
+#define SYS_CLOCK_H
 
 #include "stm32f4xx.h"
 
 namespace custom_libraries {
 
-class clock_config {
+class sys_clock {
 public:
-	clock_config();
-	~clock_config();
+	sys_clock();
+	~sys_clock();
 	void initialize();
 };
 
 } /* namespace custom_libraries */
 
-#endif /* CLOCKCONFIG_H_ */
+#endif /* SYS_CLOCK_H */

@@ -21,7 +21,7 @@
 #include <GPIO.h>
 #include <ADC.h>
 #include <EXTI.h>
-#include <clockconfig.h>
+#include <sys_clock.h>
 
 #include "console.h"
 
@@ -65,13 +65,12 @@ custom_libraries::edge response_edge = custom_libraries::FALLING;
 custom_libraries::_EXTI debug_button(DEBUG_BUTTON_PORT,DEBUG_BUTTON_PIN,response_edge);
 
 /* SYSTEM CLOCK CONFIGURATION */
-custom_libraries::clock_config system_clock;
+custom_libraries::sys_clock system_clock;
 
 /* ACCELEROMETER INSTANCE */
 custom_libraries::LIS3DH accel_sensor(SPI1, GPIOA, SCK_PIN, MOSI_PIN, MISO_PIN, CS_PORT, CS_PIN);
 
-/* GATEWAY SERIAL PORT */
-custom_libraries::USART gateway_serial(USART2, GPIOA, 3, 2, 9600);
+
 
 /* DEBUG CONSOLE */
 custom_libraries::USART debug_console(USART1, DEBUG_PORT, DEBUG_PORT_RX, DEBUG_PORT_TX, 9600);

@@ -1,26 +1,26 @@
 /*
- * clockconfig.cpp
+ * sys_clock.cpp
  *
  *  Created on: Mar 30, 2020
  *      Author: MCLEANS
  */
 
-#include "clockconfig.h"
+#include "sys_clock.h"
 
 
 namespace custom_libraries {
 
-clock_config::clock_config() {
+sys_clock::sys_clock() {
 	// TODO Auto-generated constructor stub
 
 }
 
-clock_config::~clock_config() {
+sys_clock::~sys_clock() {
 	// TODO Auto-generated destructor stub
 }
 
 
-void clock_config::initialize(){
+void sys_clock::initialize(){
 	//-------------STSTEM CLOCK CONFIGURATION-------------------------
 
 	//SET FLASH MEMORY LATENCY AND ENABLE PREFETCH
