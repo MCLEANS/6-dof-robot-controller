@@ -278,18 +278,18 @@ int main(void)
               1,
               &sensor_handler_task);
 
-  xTaskCreate(SerialComms::run,
-              "Task to handle sending data to the gateway",
-              1000,
-              NULL,
-              1,
-              &SerialComms::get_instance()->taskHandle);
+  // xTaskCreate(SerialComms::run,
+  //             "Task to handle sending data to the gateway",
+  //             1000,
+  //             NULL,
+  //             1,
+  //             &SerialComms::get_instance()->taskHandle);
 
  xTaskCreate(debug_console_handler,
              "Task to handle serial debug console",
              1000,
              NULL,
-             1,
+             2,
              &debug_console_handler_task);
 
   /* Start system scheduler */

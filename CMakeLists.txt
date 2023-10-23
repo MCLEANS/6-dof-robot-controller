@@ -42,7 +42,18 @@ set(FREERTOS_INCLUDE_FILES
 
 set(EXECUTABLE ${PROJECT_NAME}.elf)
 
+# Add ArduinoJson as a submodule
+add_subdirectory(ArduinoJson1)
+
 add_executable(${EXECUTABLE})
+
+
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(${EXECUTABLE} 
+    ArduinoJson
+)
 
 target_sources(${EXECUTABLE} PRIVATE
     # CONFIGURATION
