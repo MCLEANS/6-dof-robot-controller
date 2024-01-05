@@ -467,7 +467,7 @@ void flag_reset(TimerHandle_t xTimer){
 int main(void)
 {
   /* Initialize system clock */
-  system_clock.initialize();
+   system_clock.initialize();
 
   /**
    * Initialize vibration sensor 
